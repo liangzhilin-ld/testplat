@@ -1,0 +1,8 @@
+/target
+
+/bin/
+# TechstarApiTest
+/.project
+/.classpath
+/.settings/
+testplat/.gitignore
