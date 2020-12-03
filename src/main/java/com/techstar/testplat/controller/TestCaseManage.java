@@ -61,6 +61,10 @@ public class TestCaseManage{
     	}
     	if(api.getApiPre().equals("4")) {    		
     		ApiMock entity=BeanUtil.mapToBean(api.getPreProcessor(), ApiMock.class, true);
+    		if(entity.getApiPre().equals("YES")) {
+    			Beanshell shell=BeanUtil.mapToBean(entity.getBeanShell(), Beanshell.class, true);
+    			shellServer.save(shell);
+    		}
     		mockserver.save(entity);
     	}
     	
