@@ -5,21 +5,17 @@ import lombok.extern.apachecommons.CommonsLog;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ApiReport;
 import com.autotest.data.mode.TestScheduled;
-import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.techstar.testplat.config.CodeMsg;
 import com.techstar.testplat.config.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
 
-@Api(tags = "TestScheduled操作")
+@Api(tags = "测试计划管理")
 @Validated
 @CommonsLog
 @RestController
@@ -29,7 +25,7 @@ public class TestSchedule{
     @ApiOperation(value = "计划任务添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("addTestPlan")
-    public Result<Object> getAll(@RequestBody TestScheduled plan) {
+    public Result<Object> addTestPlan(@RequestBody TestScheduled plan) {
     	Result<Object> res=new Result<>();
         log.info("getMemberSmallVO:" + plan);
         try {

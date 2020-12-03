@@ -24,6 +24,7 @@ public class TestDataServiceImpl  {
 	private @Autowired  SyetemDbServiceImpl sysDb;
 	private @Autowired  ApiMockServiceImpl mockData;
 	private @Autowired  TestScheduledServiceImpl testScheduled;
+	private @Autowired BeanshellServiceImpl shellServer;
 	private List<ApiHeader> headers;
 
 	public boolean AddScheduled(TestScheduled ts) {
