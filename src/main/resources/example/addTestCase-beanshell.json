@@ -3,7 +3,7 @@
   "apiMethod": "POST",
   "apiName": "员工列表",
   "apiPre": "2",
-  "apiProtocol": "string",
+  "apiProtocol": "http",
   "apiUri": "/platform/org/findTreeData",
   "attachment": "string",
   "caseId": 1,
