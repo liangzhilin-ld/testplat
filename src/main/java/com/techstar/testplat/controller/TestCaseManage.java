@@ -50,6 +50,7 @@ public class TestCaseManage{
     	Result<Object> res=new Result<>();
     	if(caseServer.save(api)) {
     		int caseID=api.getCaseId();
+    		//保存前置处理器
     		if(api.getApiPre().equals("1")) {
         		String caseid=api.getPreCases();
         	}
@@ -73,7 +74,7 @@ public class TestCaseManage{
         		}
         		mockserver.save(entity);
         	}
-        	//后置处理
+        	//保存后置处理器
         	if(api.getTcPost().equals("1")) {
         		ProcessorJson postjson=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJson.class, true);
         		postjson.setCaseId(caseID);
@@ -81,24 +82,35 @@ public class TestCaseManage{
         	}
         	if(api.getTcPost().equals("2")) {
         		Beanshell shell =BeanUtil.mapToBean(api.getPostProcessor(), Beanshell.class, true);
+        		shell.setCaseId(caseID);
         		shellServer.save(shell);
         	}
         	if(api.getTcPost().equals("3")) {
         		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJdbc.class, true);
+        		preJdbc.setCaseId(caseID);
         		pocessorJdbcser.save(preJdbc);
         	}
         	//断言保存
         	if(api.getCheckPoint().equals("1")) {
         		AssertJson assertBean=BeanUtil.mapToBean(api.getAssertions(), AssertJson.class, true);
+        		assertBean.setCaseId(caseID);
         		assertServer.save(assertBean);
         	}
         	if(api.getCheckPoint().equals("2")) {
         		Beanshell shell=BeanUtil.mapToBean(api.getAssertions(), Beanshell.class, true);
+        		shell.setCaseId(caseID);
         		shellServer.save(shell);
         	}
         	if(api.getCheckPoint().equals("3")) {
         		AssertResponse response=BeanUtil.mapToBean(api.getAssertions(), AssertResponse.class, true);
+        		response.setCaseId(caseID);
         		responServer.save(response);
+        	}
+        	if(api.getConfigElement().equals("1")) {
+        		ApiHeader headers=BeanUtil.mapToBean(api.getAssertions(), ApiHeader.class, true);
+        	}
+        	if(api.getConfigElement().equals("2")) {
+        		
         	}
     	}
     	
