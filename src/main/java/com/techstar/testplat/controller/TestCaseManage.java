@@ -13,17 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
-import com.autotest.data.mode.ApiMock;
-import com.autotest.data.mode.ApiReport;
-import com.autotest.data.mode.ApiTestcase;
-import com.autotest.data.mode.Beanshell;
-import com.autotest.data.mode.ProcessorJdbc;
-import com.autotest.data.mode.TestScheduled;
+import com.autotest.data.mapper.ApiTestcaseMapper;
+import com.autotest.data.mode.*;
 import com.autotest.data.service.IApiTestcaseService;
-import com.autotest.data.service.impl.ApiMockServiceImpl;
-import com.autotest.data.service.impl.ApiTestcaseServiceImpl;
-import com.autotest.data.service.impl.BeanshellServiceImpl;
-import com.autotest.data.service.impl.ProcessorJdbcServiceImpl;
+import com.autotest.data.service.impl.*;
+//import com.autotest.data.service.impl.ApiTestcaseServiceImpl;
+//import com.autotest.data.service.impl.AssertJsonServiceImpl;
+//import com.autotest.data.service.impl.BeanshellServiceImpl;
+//import com.autotest.data.service.impl.ProcessorJdbcServiceImpl;
+//import com.autotest.data.service.impl.ProcessorJsonServiceImpl;
 import com.techstar.testplat.config.CodeMsg;
 import com.techstar.testplat.config.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
@@ -41,37 +39,70 @@ public class TestCaseManage{
 	private @Autowired ApiMockServiceImpl mockserver;
 	private @Autowired ProcessorJdbcServiceImpl pocessorJdbcser;
 	private @Autowired IApiTestcaseService caseServer;
-	
+	private @Autowired IApiTestcaseService casemapper;
+	private @Autowired ProcessorJsonServiceImpl jsonServer;
+	private @Autowired AssertJsonServiceImpl assertServer;
+	private @Autowired AssertResponseServiceImpl responServer;
     @ApiOperation(value = "计划任务添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("addTestCase")
     public Result<Object> addTestCase(@RequestBody ApiTestcase api) {
     	Result<Object> res=new Result<>();
-    	caseServer.save(api);
-    	if(api.getApiPre().equals("1")) {
-    		String caseid=api.getPreCases();
-    	}
-    	if(api.getApiPre().equals("2")) { 
-    		Beanshell shell =BeanUtil.mapToBean(api.getPreProcessor(), Beanshell.class, true);
-    		shellServer.save(shell);
-    	}
-    	if(api.getApiPre().equals("3")) {    		
-    		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPreProcessor(), ProcessorJdbc.class, true);
-    		pocessorJdbcser.save(preJdbc);
-    	}
-    	if(api.getApiPre().equals("4")) {    		
-    		ApiMock entity=BeanUtil.mapToBean(api.getPreProcessor(), ApiMock.class, true);
-    		if(entity.getApiPre().equals("YES")) {
-    			Beanshell shell=BeanUtil.mapToBean(entity.getBeanShell(), Beanshell.class, true);
-    			shellServer.save(shell);
-    		}
-    		mockserver.save(entity);
+    	if(caseServer.save(api)) {
+    		int caseID=api.getCaseId();
+    		if(api.getApiPre().equals("1")) {
+        		String caseid=api.getPreCases();
+        	}
+        	if(api.getApiPre().equals("2")) { 
+        		Beanshell shell =BeanUtil.mapToBean(api.getPreProcessor(), Beanshell.class, true);
+        		shell.setCaseId(caseID);
+        		shellServer.save(shell);
+        	}
+        	if(api.getApiPre().equals("3")) {    		
+        		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPreProcessor(), ProcessorJdbc.class, true);
+        		preJdbc.setCaseId(caseID);
+        		pocessorJdbcser.save(preJdbc);
+        	}
+        	if(api.getApiPre().equals("4")) {    		
+        		ApiMock entity=BeanUtil.mapToBean(api.getPreProcessor(), ApiMock.class, true);
+        		entity.setCaseId(caseID);
+        		if(entity.getApiPre().equals("YES")) {
+        			Beanshell shell=BeanUtil.mapToBean(entity.getBeanShell(), Beanshell.class, true);
+        			shell.setCaseId(caseID);
+        			shellServer.save(shell);
+        		}
+        		mockserver.save(entity);
+        	}
+        	//后置处理
+        	if(api.getTcPost().equals("1")) {
+        		ProcessorJson postjson=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJson.class, true);
+        		postjson.setCaseId(caseID);
+        		jsonServer.save(postjson);
+        	}
+        	if(api.getTcPost().equals("2")) {
+        		Beanshell shell =BeanUtil.mapToBean(api.getPostProcessor(), Beanshell.class, true);
+        		shellServer.save(shell);
+        	}
+        	if(api.getTcPost().equals("3")) {
+        		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJdbc.class, true);
+        		pocessorJdbcser.save(preJdbc);
+        	}
+        	//断言保存
+        	if(api.getCheckPoint().equals("1")) {
+        		AssertJson assertBean=BeanUtil.mapToBean(api.getAssertions(), AssertJson.class, true);
+        		assertServer.save(assertBean);
+        	}
+        	if(api.getCheckPoint().equals("2")) {
+        		Beanshell shell=BeanUtil.mapToBean(api.getAssertions(), Beanshell.class, true);
+        		shellServer.save(shell);
+        	}
+        	if(api.getCheckPoint().equals("3")) {
+        		AssertResponse response=BeanUtil.mapToBean(api.getAssertions(), AssertResponse.class, true);
+        		responServer.save(response);
+        	}
     	}
     	
     	
-    	
-    	
-        //log.info("getMemberSmallVO:" + api);
         try {
         	
 		} catch (Exception e) {
