@@ -42,6 +42,7 @@ public class TestCaseManage{
 	private @Autowired IApiTestcaseService casemapper;
 	private @Autowired ProcessorJsonServiceImpl jsonServer;
 	private @Autowired AssertJsonServiceImpl assertServer;
+	private @Autowired AssertJsonServiceImpl assertJson;
 	private @Autowired AssertResponseServiceImpl responServer;
     @ApiOperation(value = "计划任务添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
@@ -74,44 +75,62 @@ public class TestCaseManage{
         		}
         		mockserver.save(entity);
         	}
-        	//保存后置处理器
-        	if(api.getTcPost().equals("1")) {
-        		ProcessorJson postjson=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJson.class, true);
-        		postjson.setCaseId(caseID);
-        		jsonServer.save(postjson);
-        	}
-        	if(api.getTcPost().equals("2")) {
-        		Beanshell shell =BeanUtil.mapToBean(api.getPostProcessor(), Beanshell.class, true);
-        		shell.setCaseId(caseID);
-        		shellServer.save(shell);
-        	}
-        	if(api.getTcPost().equals("3")) {
-        		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPostProcessor(), ProcessorJdbc.class, true);
-        		preJdbc.setCaseId(caseID);
-        		pocessorJdbcser.save(preJdbc);
-        	}
-        	//断言保存
-        	if(api.getCheckPoint().equals("1")) {
-        		AssertJson assertBean=BeanUtil.mapToBean(api.getAssertions(), AssertJson.class, true);
-        		assertBean.setCaseId(caseID);
-        		assertServer.save(assertBean);
-        	}
-        	if(api.getCheckPoint().equals("2")) {
-        		Beanshell shell=BeanUtil.mapToBean(api.getAssertions(), Beanshell.class, true);
-        		shell.setCaseId(caseID);
-        		shellServer.save(shell);
-        	}
-        	if(api.getCheckPoint().equals("3")) {
-        		AssertResponse response=BeanUtil.mapToBean(api.getAssertions(), AssertResponse.class, true);
-        		response.setCaseId(caseID);
-        		responServer.save(response);
-        	}
-        	if(api.getConfigElement().equals("1")) {
-        		ApiHeader headers=BeanUtil.mapToBean(api.getAssertions(), ApiHeader.class, true);
-        	}
-        	if(api.getConfigElement().equals("2")) {
+        	//保存后置处理器api.getTcPost().equals("1")，满足processorType==2
+        	if(api.getPostProcessor().size()>0) {
+        		for (Map<?, ?> postStr : api.getPostProcessor()) {
+
+        			if(postStr.get("suffixAll")!=null) {
+        				ProcessorJson postjson=BeanUtil.mapToBean(postStr, ProcessorJson.class, true);
+                		postjson.setCaseId(caseID);
+                		jsonServer.save(postjson);
+                		continue;
+        			}
+        			if(postStr.get("script")!=null) {
+                		Beanshell shell =BeanUtil.mapToBean(postStr, Beanshell.class, true);
+                		shell.setCaseId(caseID);
+                		shellServer.save(shell);
+                		continue;
+        			}
+        			if(postStr.get("variableNamePool")!=null) {
+        				ProcessorJdbc preJdbc=BeanUtil.mapToBean(postStr, ProcessorJdbc.class, true);
+                		preJdbc.setCaseId(caseID);
+                		pocessorJdbcser.save(preJdbc);
+        			}
+				}
         		
         	}
+        	if(api.getAssertions().size()>0) {
+        		for (Map<?, ?> asserts : api.getAssertions()) {
+        			if(asserts.get("jsonPath")!=null) {
+        				AssertJson assJ=BeanUtil.mapToBean(asserts, AssertJson.class, true);
+        				assJ.setCaseId(caseID);
+                		assertJson.save(assJ);
+                		continue;
+        			}
+        			
+        			if(asserts.get("script")!=null) {
+        				Beanshell shell =BeanUtil.mapToBean(asserts, Beanshell.class, true);
+                		shell.setCaseId(caseID);
+                		shellServer.save(shell);
+                		continue;
+        			}
+        			
+        			if(asserts.get("testString")!=null) {
+        				AssertResponse asR =BeanUtil.mapToBean(asserts, AssertResponse.class, true);
+        				asR.setCaseId(caseID);
+        				responServer.save(asR);
+        			}
+        			
+        		}
+        	}
+
+        	//配置元件
+//        	if(api.getConfigElement().equals("1")) {
+//        		ApiHeader headers=BeanUtil.mapToBean(api.getAssertions(), ApiHeader.class, true);
+//        	}
+//        	if(api.getConfigElement().equals("2")) {
+//        		
+//        	}
     	}
     	
     	
@@ -124,6 +143,13 @@ public class TestCaseManage{
             res=res.fail(codeMsg);
 			// TODO: handle exception
 		}    	
+    	return res;
+    }
+    @ApiOperation(value = "计划任务添加2")
+    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
+    @PostMapping("addTestCase2")
+    public Result<Object> addTestCase2(@RequestBody AssertResponse api) {
+    	Result<Object> res=new Result<>();
     	return res;
     }
 }
