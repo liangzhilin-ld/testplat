@@ -17,6 +17,23 @@
 	"suiteName": "用户模块",
 	"tcPost": "1",
 	"tcVar": "",
+	"confElements": {
+		"headers": [{
+			"caseId": 0,
+			"key": "name1",
+			"projectId": 1,
+			"type": "1",
+			"value": "values"
+		}],
+		"userDefinedVar": [{
+			"caseId": 0,
+			"desc": "string",
+			"name": "name1",
+			"projectId": 1,
+			"type": "1",
+			"value": "values111"
+		}]
+	},
 	"preProcessor": {
 		"beanshellType": "1",
 		"caseId": 1,
@@ -26,24 +43,8 @@
 		"resetInterpreter": true,
 		"script": "HHHHHH"
 	},
-	"assertions": [{
-			"addAssertValue": true,
-			"caseId": 0,
-			"expectedNull": false,
-			"expectedValue": "string",
-			"invertAssert": false,
-			"jsonPath": "$.data",
-			"name": "json断言"
-		}, {
-			"applyTo": "1",
-			"variableValue": "",
-			"caseId": 0,
-			"customFailureMsg": "断言失败",
-			"fieldToText": "RESPONSE_DATA",
-			"name": "响应断言",
-			"patternRules": "SUBSTRING",
-			"testString": ["\"processId\":\"(.+?)\"", "string22", "string33"]
-		}, {
+	"assertions": {
+		"assertBeanshell": [{
 			"beanshellType": "3",
 			"caseId": 1,
 			"fileName": "",
@@ -51,39 +52,61 @@
 			"prameters": "",
 			"resetInterpreter": false,
 			"script": "HHHHHH"
-		}
-
-	],
-	"postProcessor": [{
-		"applyTo": "Main_Sample_Only",
-		"caseId": 0,
-		"defaultValue": "null",
-		"jsonPath": "$.processId",
-		"matchNo": "1",
-		"name": "json后置处理器",
-		"processorType": "2",
-		"suffixAll": false,
-		"variableName": "pid"
-	}, {
-		"beanshellType": "2",
-		"caseId": 1,
-		"fileName": "",
-		"name": "beanshell后置处理",
-		"prameters": "",
-		"resetInterpreter": false,
-		"script": "HHHHHH"
-	}, {
-		"caseId": 2,
-		"handleResultset": "Store as String",
-		"name": "jdbc后置处理",
-		"parameterTypes": "",
-		"parameterValues": "",
-		"processorType": "2",
-		"query": "select * from fff",
-		"queryTimeout": "10000",
-		"queryType": 3,
-		"resultValueName": "jdbc",
-		"variableNamePool": "mysql",
-		"variableNames": "name,test"
-	}]
+		}],
+		"assertJson": [{
+			"addAssertValue": true,
+			"caseId": 0,
+			"expectedNull": false,
+			"expectedValue": "string",
+			"invertAssert": false,
+			"jsonPath": "$.data",
+			"name": "json断言"
+		}],
+		"assertResponse": [{
+			"applyTo": "1",
+			"variableValue": "",
+			"caseId": 0,
+			"customFailureMsg": "断言失败",
+			"fieldToText": "RESPONSE_DATA",
+			"name": "响应断言",
+			"patternRules": "SUBSTRING",
+			"testString": "[\"\"processId\":\"(.+?)\"\", \"string22\", \"string33\"]"
+		}]
+	},
+	"postProcessor": {
+		"postBeanshell": [{
+			"beanshellType": "2",
+			"caseId": 1,
+			"fileName": "",
+			"name": "beanshell后置处理",
+			"prameters": "",
+			"resetInterpreter": false,
+			"script": "HHHHHH"
+		}],
+		"postJdbc": [{
+			"caseId": 2,
+			"handleResultset": "Store as String",
+			"name": "jdbc后置处理",
+			"parameterTypes": "",
+			"parameterValues": "",
+			"processorType": "2",
+			"query": "select * from fff",
+			"queryTimeout": "10000",
+			"queryType": 3,
+			"resultValueName": "jdbc",
+			"variableNamePool": "mysql",
+			"variableNames": "name,test"
+		}],
+		"postJson": [{
+			"applyTo": "Main_Sample_Only",
+			"caseId": 0,
+			"defaultValue": "null",
+			"jsonPath": "$.processId",
+			"matchNo": "1",
+			"name": "json后置处理器",
+			"processorType": "2",
+			"suffixAll": false,
+			"variableName": "pid"
+		}]
+	}
 }
