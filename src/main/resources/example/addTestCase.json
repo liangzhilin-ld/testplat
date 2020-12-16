@@ -11,7 +11,7 @@
 	"configElement": "1",
 	"createTime": "2020-12-02T03:04:40.650Z",
 	"parameters": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
-	"preCases": "",
+	"preCases": "1,2,3",
 	"projectId": 1,
 	"suiteId": 0,
 	"suiteName": "用户模块",
@@ -35,13 +35,51 @@
 		}]
 	},
 	"preProcessor": {
-		"beanshellType": "1",
-		"caseId": 1,
-		"fileName": "",
-		"name": "beanshell处理",
-		"prameters": "",
-		"resetInterpreter": true,
-		"script": "HHHHHH"
+		"preBeanshell": [{
+			"beanshellType": "1",
+			"caseId": 1,
+			"fileName": "",
+			"name": "beanshell处理",
+			"prameters": "",
+			"resetInterpreter": true,
+			"script": "HHHHHH"
+		}],
+		"preJdbc": [{
+			"caseId": 2,
+			"handleResultset": "Store as String",
+			"name": "jdb前置处理",
+			"parameterTypes": "string",
+			"parameterValues": "string",
+			"processorType": "1",
+			"query": "select * from fff",
+			"queryTimeout": "10000",
+			"queryType": 3,
+			"resultValueName": "string",
+			"variableNamePool": "mysql",
+			"variableNames": "name,test"
+		}],
+		"preMock": [{
+			"apiPre": "YES",
+			"caseId": 4,
+			"comment": "string",
+			"createTime": "2020-12-04T04:26:55.135Z",
+			"name": "/platform/org/findTreeData",
+			"requestData": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+			"responseData": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+			"tcPost": "2",
+			"url": "/platform/org/findTreeData",
+			"beanShell": {
+				"beanshellType": "4",
+				"caseId": 4,
+				"fileName": "",
+				"name": "beanshell前置处理器",
+				"prameters": "",
+				"resetInterpreter": "",
+				"script": "ddddddddddddddddddddddddddd"
+			}
+		}],
+		"preCase": ["1"]
+
 	},
 	"assertions": {
 		"assertBeanshell": [{
