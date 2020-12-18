@@ -2,6 +2,8 @@ package com.techstar.testplat.controller;
 
 import io.swagger.annotations.*;
 import lombok.extern.apachecommons.CommonsLog;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,10 @@ public class TestCaseManage{
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("addTestCase")
     public Result<Object> addTestCase(@RequestBody ApiTestcase api) {
+    	ArrayList<String> ffArrayList=new ArrayList<>();
+    	ffArrayList.add("\"processId\":\"(.+?)\"");
+    	ffArrayList.add("dddd");
+    	String hhString=ffArrayList.toString();
     	Result<Object> res=new Result<>();
     	if(caseServer.save(api)) {
     		int caseID=api.getCaseId();
@@ -333,7 +339,7 @@ public class TestCaseManage{
     @ApiOperation(value = "用例加载")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @GetMapping("loadTestCase")
-    public Result<ApiTestcase> addTestCase2(@RequestParam(value = "caseId", required = true) Integer caseId) {
+    public Result<ApiTestcase> loadTestCase(@RequestParam(value = "caseId", required = true) Integer caseId) {
     	QueryWrapper<ApiTestcase> wrapper = new QueryWrapper<>();
 		wrapper.lambda().eq(ApiTestcase::getCaseId,caseId);
 		ApiTestcase apiTestcase=caseServer.getOne(wrapper, false);
@@ -446,8 +452,9 @@ public class TestCaseManage{
 		apiTestcase.setPostProcessor(postProcessor);
 		apiTestcase.setAssertions(assertList);
 		apiTestcase.setConfElements(confElements);
-    	Result<ApiTestcase> res=new Result<ApiTestcase>();
-    	res.success(apiTestcase);
+    	@SuppressWarnings("unchecked")
+		Result<ApiTestcase> res=Result.setSuccess(apiTestcase);
+    	
     	return res;
     }
 }

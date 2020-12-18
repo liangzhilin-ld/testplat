@@ -54,7 +54,9 @@ public class Result<T> implements Serializable{
     	return new Result(codeMsg);
     }
 
-
+    public static Result setSuccess(Object data) {
+    	return  new Result(CodeMsg.SUCCESS,data);
+    }
     public static Result createfail(CodeMsg codeMsg) {
         Result result=new Result();
         result.setCode(codeMsg.getCode());

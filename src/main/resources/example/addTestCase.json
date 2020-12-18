@@ -108,7 +108,7 @@
 			"fieldToText": "RESPONSE_DATA",
 			"name": "响应断言",
 			"patternRules": "SUBSTRING",
-			"testString": "[\"\"processId\":\"(.+?)\"\", \"string22\", \"string33\"]"
+			"testString": "[\"processId\":\"(.+?)\", string22, string33]"
 		}]
 	},
 	"postProcessor": {

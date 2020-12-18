@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ApiReport;
+import com.autotest.data.mode.ScheduledTrigger;
 import com.autotest.data.mode.TestScheduled;
+import com.autotest.data.service.impl.ScheduledTriggerServiceImpl;
 import com.techstar.testplat.config.CodeMsg;
 import com.techstar.testplat.config.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
@@ -21,7 +23,8 @@ import com.techstar.testplat.service.TestDataServiceImpl;
 @RestController
 @RequestMapping("TestScheduled")
 public class TestSchedule{
-	private @Autowired TestDataServiceImpl dataOp;     
+	private @Autowired TestDataServiceImpl dataOp;   
+	private @Autowired ScheduledTriggerServiceImpl triggerService; 
     @ApiOperation(value = "计划任务添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("addTestPlan")
@@ -37,6 +40,8 @@ public class TestSchedule{
         		detail.setJobId(id);
         		dataOp.addApiReport(detail);
     		}
+        	ScheduledTrigger timeCorn=plan.getTimeCorn();
+        	if(timeCorn!=null)triggerService.save(timeCorn);
 		} catch (Exception e) {
 			log.info(e.getMessage(), e);
             CodeMsg codeMsg = CodeMsg.PARAMS_INVALID_DETAIL;
