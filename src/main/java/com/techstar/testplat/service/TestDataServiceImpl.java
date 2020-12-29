@@ -86,7 +86,7 @@ public class TestDataServiceImpl  {
 		boolean flag=false;
 		for (String str : ts) {
 			QueryWrapper<ApiReport> queryWrapper = new QueryWrapper<>();
-			queryWrapper.eq("JOB_ID", Integer.valueOf(str));
+			queryWrapper.lambda().eq(ApiReport::getJobId, str);//"JOB_ID"
 			flag=apiReport.remove(queryWrapper);
 		}
         

@@ -9,6 +9,7 @@ jmeter:
   delay: 0
   loops: 1
   logPath: jtl
+  jmeterAgentUrl: http://172.16.206.21:9090/
   resultReceiverUrl: http://172.16.206.128:8888/test/performance/jmeter-result
 spring:
   datasource:
