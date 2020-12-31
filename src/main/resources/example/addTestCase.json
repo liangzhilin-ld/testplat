@@ -36,10 +36,10 @@
 	},
 	"preProcessor": {
 		"preBeanshell": [{
-			"beanshellType": "1",
+			"beanshellType": "2",
 			"caseId": 1,
 			"fileName": "",
-			"name": "beanshell处理",
+			"name": "beanshell前置处理",
 			"prameters": "",
 			"resetInterpreter": true,
 			"script": "HHHHHH"
@@ -48,12 +48,12 @@
 			"caseId": 2,
 			"handleResultset": "Store as String",
 			"name": "jdb前置处理",
-			"parameterTypes": "string",
-			"parameterValues": "string",
-			"processorType": "1",
-			"query": "select * from fff",
+			"parameterTypes": "",
+			"parameterValues": "",
+			"processorType": "3",
+			"query": "select * from autoplat.api_header",
 			"queryTimeout": "10000",
-			"queryType": 3,
+			"queryType": "23",
 			"resultValueName": "string",
 			"variableNamePool": "mysql",
 			"variableNames": "name,test"
@@ -69,7 +69,7 @@
 			"tcPost": "2",
 			"url": "/platform/org/findTreeData",
 			"beanShell": {
-				"beanshellType": "4",
+				"beanshellType": "6",
 				"caseId": 4,
 				"fileName": "",
 				"name": "beanshell前置处理器",
@@ -77,13 +77,12 @@
 				"resetInterpreter": "",
 				"script": "ddddddddddddddddddddddddddd"
 			}
-		}],
-		"preCase": ["1"]
+		}]
 
 	},
 	"assertions": {
 		"assertBeanshell": [{
-			"beanshellType": "3",
+			"beanshellType": "11",
 			"caseId": 1,
 			"fileName": "",
 			"name": "beanshell断言",
@@ -101,19 +100,19 @@
 			"name": "json断言"
 		}],
 		"assertResponse": [{
-			"applyTo": "1",
+			"applyTo": "20",
 			"variableValue": "",
 			"caseId": 0,
 			"customFailureMsg": "断言失败",
 			"fieldToText": "RESPONSE_DATA",
 			"name": "响应断言",
 			"patternRules": "SUBSTRING",
-			"testString": "[\"processId\":\"(.+?)\", string22, string33]"
+			"testString": "{\"sub1\": \"\\\"processId\\\":\\\"(.+?)\\\"\",\"sub2\": \"恒泰实达科技股份有限公司\",\"sub3\": \"恒实研究院\"}"
 		}]
 	},
 	"postProcessor": {
 		"postBeanshell": [{
-			"beanshellType": "2",
+			"beanshellType": "8",
 			"caseId": 1,
 			"fileName": "",
 			"name": "beanshell后置处理",
@@ -127,22 +126,22 @@
 			"name": "jdbc后置处理",
 			"parameterTypes": "",
 			"parameterValues": "",
-			"processorType": "2",
-			"query": "select * from fff",
+			"processorType": "9",
+			"query": "select * from autoplat.api_header",
 			"queryTimeout": "10000",
-			"queryType": 3,
+			"queryType": "23",
 			"resultValueName": "jdbc",
 			"variableNamePool": "mysql",
 			"variableNames": "name,test"
 		}],
 		"postJson": [{
-			"applyTo": "Main_Sample_Only",
+			"applyTo": "20",
 			"caseId": 0,
 			"defaultValue": "null",
 			"jsonPath": "$.processId",
 			"matchNo": "1",
 			"name": "json后置处理器",
-			"processorType": "2",
+			"processorType": "7",
 			"suffixAll": false,
 			"variableName": "pid"
 		}]

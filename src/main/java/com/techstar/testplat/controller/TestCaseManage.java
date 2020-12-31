@@ -48,10 +48,6 @@ public class TestCaseManage{
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("addTestCase")
     public Result<Object> addTestCase(@RequestBody ApiTestcase api) {
-    	ArrayList<String> ffArrayList=new ArrayList<>();
-    	ffArrayList.add("\"processId\":\"(.+?)\"");
-    	ffArrayList.add("dddd");
-    	String hhString=ffArrayList.toString();
     	Result<Object> res=new Result<>();
     	if(caseServer.save(api)) {
     		int caseID=api.getCaseId();
@@ -80,29 +76,6 @@ public class TestCaseManage{
         			mockServer.save(dummy);
     			}
         	}
-//    		if(api.getApiPre().equals("1")) {
-//        		String caseid=api.getPreCases();
-//        	}
-//        	if(api.getApiPre().equals("2")) { 
-//        		Beanshell shell =BeanUtil.mapToBean(api.getPreProcessor(), Beanshell.class, true);
-//        		shell.setCaseId(caseID);
-//        		shellServer.save(shell);
-//        	}
-//        	if(api.getApiPre().equals("3")) {    		
-//        		ProcessorJdbc preJdbc=BeanUtil.mapToBean(api.getPreProcessor(), ProcessorJdbc.class, true);
-//        		preJdbc.setCaseId(caseID);
-//        		pocessorJdbcser.save(preJdbc);
-//        	}
-//        	if(api.getApiPre().equals("4")) {    		
-//        		ApiMock entity=BeanUtil.mapToBean(api.getPreProcessor(), ApiMock.class, true);
-//        		entity.setCaseId(caseID);
-//        		if(entity.getApiPre().equals("YES")) {
-//        			Beanshell shell=BeanUtil.mapToBean(entity.getBeanShell(), Beanshell.class, true);
-//        			shell.setCaseId(caseID);
-//        			shellServer.save(shell);
-//        		}
-//        		mockserver.save(entity);
-//        	}
         	//保存后置处理器api.getTcPost().equals("1")，满足processorType==2
         	PostProcessorsEntity postProcessor=api.getPostProcessor();
         	List<Beanshell> listBeanshell=postProcessor.getPostBeanshell();
@@ -180,6 +153,7 @@ public class TestCaseManage{
             res=res.fail(codeMsg);
 			// TODO: handle exception
 		}    	
+        res=Result.setSuccess(api);
     	return res;
     }
     

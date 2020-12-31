@@ -75,14 +75,16 @@ public class TestTaskService implements SchedulingConfigurer{
     	            public void run() {
     	            	log.info(trig.getId()+"任务开始执行。。。。。");
     	            	String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
-    	            	String[] caseids=trig.getTcCaseids().split(",");
-    	            	for (String caseid : caseids) {
-    	            		ApiReport detail = new ApiReport();
-    	            		detail.setCaseId(Integer.parseInt(caseid));
-    	            		detail.setJobId(trig.getId());
-    	            		detail.setHistoryId(historyId);
-    	            		apiReport.saveOrUpdate(detail);
-    	        		}
+    	            	String caseIds=trig.getTcCaseids();
+    	            	if(!caseIds.isEmpty()) {
+    	            		for (String caseid : caseIds.split(",")) {
+        	            		ApiReport detail = new ApiReport();
+        	            		detail.setCaseId(Integer.parseInt(caseid));
+        	            		detail.setJobId(trig.getId());
+        	            		detail.setHistoryId(historyId);
+        	            		apiReport.saveOrUpdate(detail);
+        	        		}
+    	            	}
 //    	            	QueryWrapper<ApiReport> queryWrapper=new QueryWrapper<>();
 //    	            	queryWrapper.lambda().eq(ApiReport::getJobId, trig.getId())
 //    	            						 .select(ApiReport::getJobId);

@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ApiReport;
 import com.autotest.data.mode.TestScheduled;
@@ -60,7 +62,22 @@ public class TestSchedule{
 		}    	
     	return res;
     }
-  
+    @ApiOperation(value = "计划任务停止")
+    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
+    @PostMapping("cancelTestPlan")
+    public Result<Object> cancelTestPlan(@RequestParam(value = "uri", required = true) String taskID) {
+    	Result<Object> res=new Result<>();
+        try {
+        	defaultSchedulingConfigurer.cancelTriggerTask(taskID);   	
+		} catch (Exception e) {
+			log.info(e.getMessage(), e);
+            CodeMsg codeMsg = CodeMsg.PARAMS_INVALID_DETAIL;
+            codeMsg.setMsg(e.getMessage());
+            res=res.fail(codeMsg);
+			// TODO: handle exception
+		}    	
+    	return res;
+    }
     @ApiOperation(value = "计划任务删除")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("delTestPlan")
