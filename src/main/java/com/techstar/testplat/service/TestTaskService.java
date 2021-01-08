@@ -14,12 +14,16 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
 import com.autotest.data.mode.ApiReport;
+import com.autotest.data.mode.ApiReportHistoryList;
 import com.autotest.data.mode.TestScheduled;
+import com.autotest.data.service.impl.ApiReportHistoryListServiceImpl;
 import com.autotest.data.service.impl.ApiReportServiceImpl;
 import com.autotest.data.service.impl.TestScheduledServiceImpl;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import cn.hutool.core.date.DateUtil;
 import lombok.extern.apachecommons.CommonsLog;
+
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class TestTaskService implements SchedulingConfigurer{
 	private @Autowired TestScheduledServiceImpl trigger;
 	private @Autowired ApiReportServiceImpl apiReport;
+	private @Autowired ApiReportHistoryListServiceImpl historyReport;
 	private ScheduledTaskRegistrar taskRegistrar;
 	private Map<String, ScheduledFuture<?>> taskFutures = new ConcurrentHashMap<>();
 //    private Set<ScheduledFuture<?>> scheduledFutures = null;
@@ -77,13 +82,25 @@ public class TestTaskService implements SchedulingConfigurer{
     	            	String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
     	            	String caseIds=trig.getTcCaseids();
     	            	if(!caseIds.isEmpty()) {
-    	            		for (String caseid : caseIds.split(",")) {
-        	            		ApiReport detail = new ApiReport();
-        	            		detail.setCaseId(Integer.parseInt(caseid));
-        	            		detail.setJobId(trig.getId());
-        	            		detail.setHistoryId(historyId);
-        	            		apiReport.saveOrUpdate(detail);
-        	        		}
+    	            		ApiReportHistoryList listHistory=new ApiReportHistoryList();
+    	            		listHistory.setJobId(trig.getId());
+    	            		listHistory.setJobName(trig.getJobName());
+    	            		listHistory.setStartTime(LocalDateTime.now());
+    	            		listHistory.setCreateTime(LocalDateTime.now());
+    	            		listHistory.setNotifyType(trig.getNotifyType());
+    	            		listHistory.setSerVersion("");
+    	            		Boolean isSucc=historyReport.save(listHistory);
+    	            		if(isSucc) {
+    	            			for (String caseid : caseIds.split(",")) {
+            	            		ApiReport detail = new ApiReport();
+            	            		detail.setCaseId(Integer.parseInt(caseid));
+            	            		detail.setJobId(trig.getId());
+            	            		detail.setHistoryId(listHistory.getId());
+            	            		detail.setTcRunsNum(0);
+            	            		detail.setCreateTime(LocalDateTime.now());
+            	            		apiReport.saveOrUpdate(detail);
+            	        		}
+    	            		}
     	            	}
 //    	            	QueryWrapper<ApiReport> queryWrapper=new QueryWrapper<>();
 //    	            	queryWrapper.lambda().eq(ApiReport::getJobId, trig.getId())

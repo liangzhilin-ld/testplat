@@ -25,11 +25,12 @@ public class TestDataServiceImpl  {
 	private @Autowired  ApiMockServiceImpl mockData;
 	private @Autowired  TestScheduledServiceImpl testScheduled;
 	private @Autowired BeanshellServiceImpl shellServer;
+	private @Autowired SyetemEnvServiceImpl envServer;
 	private List<ApiHeader> headers;
 
 	public boolean AddScheduled(TestScheduled ts) {
 		boolean issuccess=testScheduled.saveOrUpdate(ts);
-		//boolean issuccess=ts.insert();
+		
 		return issuccess;
 	}
 	
@@ -109,7 +110,17 @@ public class TestDataServiceImpl  {
 		}
 		return null;
 	}
-
+	public Boolean addSyetemEnv(SyetemEnv env) {
+		return envServer.save(env);
+	}
+	public Boolean updateSyetemEnv(SyetemEnv env) {
+		return envServer.updateById(env);
+	}
+	public Boolean deleteSyetemEnv(SyetemEnv env) {
+		QueryWrapper<SyetemEnv> queryWrapper=new QueryWrapper<>();
+		queryWrapper.lambda().eq(SyetemEnv::getId, env.getId());
+		return envServer.remove(queryWrapper);
+	}
 	public ProcessorJdbc getProcessorJdbc(int id) {
 		List<ProcessorJdbc> list=jdbcProcess.list();
 		for (ProcessorJdbc processor : list) {
@@ -126,6 +137,21 @@ public class TestDataServiceImpl  {
 		}
 		return null;
 	}
+	
+	public Boolean addSyetemDb(SyetemDb sdb) {
+		return sysDb.save(sdb);
+	}
+	
+	public Boolean updateSyetemDb(SyetemDb sdb) {
+		return sysDb.updateById(sdb);
+	}
+	
+	public Boolean deleteSyetemDb(SyetemDb sdb) {
+		QueryWrapper<SyetemDb> queryWrapper = new QueryWrapper<>();
+		queryWrapper.lambda().eq(SyetemDb::getCnnId,sdb.getCnnId());
+		return sysDb.remove(queryWrapper);
+	}
+	
 	public ApiMock getApiMock(int caseID) {
 		List<ApiMock> list=mockData.list();
 		for (ApiMock mock : list) {

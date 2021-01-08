@@ -1,0 +1,149 @@
+{
+	"apiIn": "body",
+	"apiMethod": "POST",
+	"apiName": "员工列表",
+	"apiPre": "2",
+	"apiProtocol": "http",
+	"apiUri": "/platform/org/findTreeData",
+	"attachment": "string",
+	"caseId": 0,
+	"checkPoint": "string",
+	"configElement": "1",
+	"createTime": "2020-12-02T03:04:40.650Z",
+	"parameters": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+	"preCases": "1,2,3",
+	"projectId": 1,
+	"suiteId": 0,
+	"suiteName": "用户模块",
+	"tcPost": "1",
+	"tcVar": "",
+	"confElements": {
+		"headers": [{
+			"caseId": 0,
+			"key": "name1",
+			"projectId": 1,
+			"type": "1",
+			"value": "values"
+		}],
+		"userDefinedVar": [{
+			"caseId": 0,
+			"desc": "string",
+			"name": "name1",
+			"projectId": 1,
+			"type": "1",
+			"value": "values111"
+		}]
+	},
+	"preProcessor": {
+		"preBeanshell": [{
+			"beanshellType": "2",
+			"caseId": 1,
+			"fileName": "",
+			"name": "beanshell前置处理",
+			"prameters": "",
+			"resetInterpreter": true,
+			"script": "HHHHHH"
+		}],
+		"preJdbc": [{
+			"caseId": 2,
+			"handleResultset": "Store as String",
+			"name": "jdb前置处理",
+			"parameterTypes": "",
+			"parameterValues": "",
+			"processorType": "3",
+			"query": "select * from autoplat.api_header",
+			"queryTimeout": "10000",
+			"queryType": "23",
+			"resultValueName": "string",
+			"variableNamePool": "mysql",
+			"variableNames": "name,test"
+		}],
+		"preMock": [{
+			"apiPre": "YES",
+			"caseId": 4,
+			"comment": "string",
+			"createTime": "2020-12-04T04:26:55.135Z",
+			"name": "/platform/org/findTreeData",
+			"requestData": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+			"responseData": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+			"tcPost": "2",
+			"url": "/platform/org/findTreeData",
+			"beanShell": {
+				"beanshellType": "6",
+				"caseId": 4,
+				"fileName": "",
+				"name": "beanshell前置处理器",
+				"prameters": "",
+				"resetInterpreter": "",
+				"script": "ddddddddddddddddddddddddddd"
+			}
+		}]
+
+	},
+	"assertions": {
+		"assertBeanshell": [{
+			"beanshellType": "11",
+			"caseId": 1,
+			"fileName": "",
+			"name": "beanshell断言",
+			"prameters": "",
+			"resetInterpreter": false,
+			"script": "HHHHHH"
+		}],
+		"assertJson": [{
+			"addAssertValue": true,
+			"caseId": 0,
+			"expectedNull": false,
+			"expectedValue": "string",
+			"invertAssert": false,
+			"jsonPath": "$.data",
+			"name": "json断言"
+		}],
+		"assertResponse": [{
+			"applyTo": "20",
+			"variableValue": "",
+			"caseId": 0,
+			"customFailureMsg": "断言失败",
+			"fieldToText": "RESPONSE_DATA",
+			"name": "响应断言",
+			"patternRules": "SUBSTRING",
+			"testString": "\"processId\":\"(.+?)\",恒泰实达科技股份有限公司, 恒实研究院"
+		}]
+	},
+	"postProcessor": {
+		"postBeanshell": [{
+			"beanshellType": "8",
+			"caseId": 1,
+			"fileName": "",
+			"name": "beanshell后置处理",
+			"prameters": "",
+			"resetInterpreter": false,
+			"script": "HHHHHH"
+		}],
+		"postJdbc": [{
+			"caseId": 2,
+			"handleResultset": "Store as String",
+			"name": "jdbc后置处理",
+			"parameterTypes": "",
+			"parameterValues": "",
+			"processorType": "9",
+			"query": "select * from autoplat.api_header",
+			"queryTimeout": "10000",
+			"queryType": "23",
+			"resultValueName": "jdbc",
+			"variableNamePool": "mysql",
+			"variableNames": "name,test"
+		}],
+		"postJson": [{
+			"applyTo": "20",
+			"caseId": 0,
+			"defaultValue": "null",
+			"jsonPath": "$.processId",
+			"matchNo": "1",
+			"name": "json后置处理器",
+			"processorType": "7",
+			"suffixAll": false,
+			"variableName": "pid"
+		}]
+	}
+}
