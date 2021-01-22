@@ -1,0 +1,50 @@
+package com.techstar.testplat.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.autotest.data.mode.ScenarioTestcase;
+import com.autotest.data.service.impl.ScenarioTestcaseServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.techstar.testplat.config.Result;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
+@Api(tags = "场景管理")
+@Validated
+@RestController
+@RequestMapping("Scenario")
+public class ScenarioTestcaseManage {
+	
+	
+	private @Autowired ScenarioTestcaseServiceImpl scenariServer;
+    
+	@ApiOperation(value = "场景添加")
+    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
+    @PostMapping("addScenario")
+    public Result<Object> addScenario(@RequestBody ScenarioTestcase api) {
+    	Result<Object> res=new Result<>();
+    	scenariServer.save(api);
+    	res=Result.setSuccess(api);
+    	return res;
+    }
+	@ApiOperation(value = "场景加载")
+    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
+    @PostMapping("loadScenario")
+    public Result<Object> loadScenario(@RequestParam int scenarioId) {
+    	Result<Object> res=new Result<>();
+    	QueryWrapper<ScenarioTestcase> queryWrapper=new QueryWrapper<>();
+    	queryWrapper.lambda().eq(ScenarioTestcase::getId, scenarioId);
+    	ScenarioTestcase scenario=scenariServer.getOne(queryWrapper);
+    	res=Result.setSuccess(scenario);
+    	return res;
+    }
+}

@@ -5,11 +5,16 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.autotest.data.mode.*;
+import com.autotest.data.mode.custom.ProjectInfoEntity;
 import com.autotest.data.service.impl.*;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 @Component
+@Transactional(rollbackFor=Exception.class)
 public class TestDataServiceImpl  {
 
 	private @Autowired ApiHeaderServiceImpl apiHeader;
@@ -57,7 +62,7 @@ public class TestDataServiceImpl  {
 		getApiHeader();
 		Map<String, String> headerMap=new HashMap<String, String>();
 		for (ApiHeader header : headers) {
-			if(header.getProjectId().equals(projectID)&&header.getType().equals("0"))
+			if(header.getProjectId().equals(projectID)&&header.getCaseId().equals(-1))
 				headerMap.put(header.getKey(), header.getValue());
 		}
 		return headerMap;
@@ -116,9 +121,9 @@ public class TestDataServiceImpl  {
 	public Boolean updateSyetemEnv(SyetemEnv env) {
 		return envServer.updateById(env);
 	}
-	public Boolean deleteSyetemEnv(SyetemEnv env) {
+	public Boolean deleteSyetemEnv(int envId) {
 		QueryWrapper<SyetemEnv> queryWrapper=new QueryWrapper<>();
-		queryWrapper.lambda().eq(SyetemEnv::getId, env.getId());
+		queryWrapper.lambda().eq(SyetemEnv::getId, envId);
 		return envServer.remove(queryWrapper);
 	}
 	public ProcessorJdbc getProcessorJdbc(int id) {
@@ -146,9 +151,9 @@ public class TestDataServiceImpl  {
 		return sysDb.updateById(sdb);
 	}
 	
-	public Boolean deleteSyetemDb(SyetemDb sdb) {
+	public Boolean deleteSyetemDb(int connId) {
 		QueryWrapper<SyetemDb> queryWrapper = new QueryWrapper<>();
-		queryWrapper.lambda().eq(SyetemDb::getCnnId,sdb.getCnnId());
+		queryWrapper.lambda().eq(SyetemDb::getCnnId,connId);
 		return sysDb.remove(queryWrapper);
 	}
 	
@@ -159,5 +164,57 @@ public class TestDataServiceImpl  {
 				return mock;
 		}
 		return null;
+	}
+	
+	public Boolean addProject(ProjectInfoEntity project) {
+		ProjectManage projectInfo=project.getProject();
+		Boolean isProjectSucc=projectManage.save(projectInfo);
+		if(isProjectSucc) {
+			List<ApiHeader> headers=project.getHeader();
+			headers.forEach(item->item.setProjectId(projectInfo.getProjectId()));
+			Boolean isheaderSucc=apiHeader.saveBatch(headers);
+			List<UserDefinedVariable> udvs=project.getUdv();
+			udvs.forEach(item->item.setProjectId(projectInfo.getProjectId()));
+			Boolean isudvSucc=userDefinedVar.saveBatch(udvs);
+			isProjectSucc=isProjectSucc&&isheaderSucc&&isudvSucc;
+		}
+		return isProjectSucc;
+	}
+	
+	public Boolean updateProject(ProjectInfoEntity project) {
+		ProjectManage projectInfo=project.getProject();
+		UpdateWrapper<ProjectManage> projectWrapper=new UpdateWrapper<>();
+		projectWrapper.lambda().eq(ProjectManage::getProjectId, projectInfo.getProjectId());
+		Boolean isProjectSucc=projectManage.update(projectWrapper);
+		
+		List<ApiHeader> headers=project.getHeader();
+		QueryWrapper<ApiHeader> wrapper=new QueryWrapper<>();
+		wrapper.lambda().eq(ApiHeader::getProjectId, projectInfo.getProjectId()).eq(ApiHeader::getCaseId, -1);
+		apiHeader.remove(wrapper);
+		apiHeader.saveBatch(headers);
+		
+		List<UserDefinedVariable> udvs=project.getUdv();
+		QueryWrapper<UserDefinedVariable> udvWrapper=new QueryWrapper<>();
+		udvWrapper.lambda().eq(UserDefinedVariable::getProjectId, projectInfo.getProjectId()).eq(UserDefinedVariable::getCaseId, -1);
+		userDefinedVar.remove(udvWrapper);
+		userDefinedVar.saveBatch(udvs);
+		return isProjectSucc;
+	}
+	
+	public Boolean deleteProject(int projectId) throws Exception {
+		Boolean isSucc=false;
+		UpdateWrapper<ProjectManage> projectWrapper=new UpdateWrapper<>();
+		projectWrapper.lambda().eq(ProjectManage::getProjectId, projectId);
+		Boolean isProjectSucc=projectManage.remove(projectWrapper);
+		
+		QueryWrapper<ApiHeader> wrapper=new QueryWrapper<>();
+		wrapper.lambda().eq(ApiHeader::getProjectId, projectId).eq(ApiHeader::getCaseId, -1);
+		Boolean isHeaderSucc =apiHeader.remove(wrapper);
+		
+		QueryWrapper<UserDefinedVariable> udvWrapper=new QueryWrapper<>();
+		udvWrapper.lambda().eq(UserDefinedVariable::getProjectId, projectId).eq(UserDefinedVariable::getCaseId, -1);
+		Boolean isudv =userDefinedVar.remove(udvWrapper);
+		isSucc=isProjectSucc&&isHeaderSucc&&isudv;
+		return isSucc;
 	}
 }

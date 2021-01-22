@@ -416,8 +416,7 @@ public class TestCaseManage{
 		
 		
 		QueryWrapper<UserDefinedVariable> wrapperUDVar = new QueryWrapper<>();
-		wrapperUDVar.lambda().eq(UserDefinedVariable::getCaseId,caseId)
-							 .eq(UserDefinedVariable::getType,"1");
+		wrapperUDVar.lambda().eq(UserDefinedVariable::getCaseId,caseId);
 		List<UserDefinedVariable> udvs=userDefineServer.list(wrapperUDVar); 
 		if(udvs.size()>0)
 			confElements.setUserDefinedVar(udvs);
@@ -431,4 +430,14 @@ public class TestCaseManage{
     	
     	return res;
     }
+
+    @ApiOperation(value = "用例调试")
+    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
+    @PostMapping("debugTestCase")
+    public Result<Object> debugTestCase(@RequestBody ApiTestcase api) {
+    	Result<Object> res=new Result<>();
+    	
+    	return res;
+    }
+
 }

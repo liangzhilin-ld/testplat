@@ -3,7 +3,10 @@ package com.techstar.testplat.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autotest.data.mode.SyetemDb;
@@ -48,8 +51,8 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "测试环境地址添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("addTestEnv")
-    public Result<Object> addTestEnv(SyetemEnv env){
+    @PostMapping("addTestEnv")
+    public Result<Object> addTestEnv(@RequestBody SyetemEnv env){
 		Result<Object> res=new Result<>();
 		try {
 			res=Result.setSuccess(dataOp.addSyetemEnv(env));
@@ -67,8 +70,8 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "测试环境地址编辑")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("updateTestEnv")
-    public Result<Object> updateTestEnv(SyetemEnv env){
+	@PostMapping("updateTestEnv")
+    public Result<Object> updateTestEnv(@RequestBody SyetemEnv env){
 		Result<Object> res=new Result<>();
 		try {
 			res=Result.setSuccess(dataOp.updateSyetemEnv(env));
@@ -85,11 +88,11 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "测试环境删除")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("deleteTestEnv")
-    public Result<Object> deleteTestEnv(SyetemEnv env){
+	@PostMapping("deleteTestEnv")
+    public Result<Object> deleteTestEnv(@RequestParam int envId){
 		Result<Object> res=new Result<>();
 		try {
-			res=Result.setSuccess(dataOp.deleteSyetemEnv(env));
+			res=Result.setSuccess(dataOp.deleteSyetemEnv(envId));
 		} catch (Exception e) {
 			log.info(e.getMessage(), e);
             CodeMsg codeMsg = CodeMsg.SERVER_ERROR;
@@ -102,8 +105,8 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "数据库地址添加")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("addTestDb")
-    public Result<Object> addTestDb(SyetemDb env){
+	@PostMapping("addTestDb")
+    public Result<Object> addTestDb(@RequestBody SyetemDb env){
 		Result<Object> res=new Result<>();
 		try {
 			res=Result.setSuccess(dataOp.addSyetemDb(env));
@@ -120,8 +123,8 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "数据库地址编辑")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("updateSyetemDb")
-    public Result<Object> updateSyetemDb(SyetemDb env){
+	@PostMapping("updateSyetemDb")
+    public Result<Object> updateSyetemDb(@RequestBody SyetemDb env){
 		Result<Object> res=new Result<>();
 		try {
 			res=Result.setSuccess(dataOp.updateSyetemDb(env));
@@ -138,11 +141,11 @@ public class SystemManage {
 	@SuppressWarnings("unchecked")
 	@ApiOperation(value = "数据库地址删除")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @GetMapping("deleteSyetemDb")
-    public Result<Object> deleteSyetemDb(SyetemDb env){
+	@PostMapping("deleteSyetemDb")
+    public Result<Object> deleteSyetemDb(@RequestParam int connId){
 		Result<Object> res=new Result<>();
 		try {
-			res=Result.setSuccess(dataOp.deleteSyetemDb(env));
+			res=Result.setSuccess(dataOp.deleteSyetemDb(connId));
 		} catch (Exception e) {
 			log.info(e.getMessage(), e);
             CodeMsg codeMsg = CodeMsg.SERVER_ERROR;

@@ -107,7 +107,11 @@
 			"fieldToText": "RESPONSE_DATA",
 			"name": "响应断言",
 			"patternRules": "SUBSTRING",
-			"testString": "{\"sub1\": \"\\\"processId\\\":\\\"(.+?)\\\"\",\"sub2\": \"恒泰实达科技股份有限公司\",\"sub3\": \"恒实研究院\"}"
+			"testString":[
+                "\"processId\":\"(.+?)\"",
+                "恒泰实达科技股份有限公司",
+                "恒实研究院"
+             ]
 		}]
 	},
 	"postProcessor": {

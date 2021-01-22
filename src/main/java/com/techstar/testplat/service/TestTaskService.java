@@ -13,6 +13,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.autotest.data.mode.ApiReport;
 import com.autotest.data.mode.ApiReportHistoryList;
 import com.autotest.data.mode.TestScheduled;
@@ -36,6 +38,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Configuration
 @EnableScheduling
 @CommonsLog
+@Transactional(rollbackFor=Exception.class)
 public class TestTaskService implements SchedulingConfigurer{
 	private @Autowired TestScheduledServiceImpl trigger;
 	private @Autowired ApiReportServiceImpl apiReport;
