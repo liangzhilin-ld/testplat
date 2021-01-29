@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.autotest.data.mode.ApiTestcase;
-import com.autotest.data.mode.custom.ProjectInfoEntity;
+import com.autotest.data.mode.ProjectManage;
 import com.techstar.testplat.config.CodeMsg;
 import com.techstar.testplat.config.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
@@ -32,7 +32,7 @@ public class PoojectManage {
 	   @ApiOperation(value = "项目添加")
 	    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
 	    @PostMapping("addProject")
-	    public Result<Object> addProject(@RequestBody ProjectInfoEntity projectInfo) {
+	    public Result<Object> addProject(@RequestBody ProjectManage projectInfo) {
 		   Result<Object> res=new Result<>();
 		   Boolean isSucc=dataop.addProject(projectInfo);
 		   if(isSucc) {
@@ -47,7 +47,7 @@ public class PoojectManage {
 	   @ApiOperation(value = "项目编辑")
 	    @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
 	    @PostMapping("updateProject")
-	    public Result<Object> updateProject(@RequestBody ProjectInfoEntity projectInfo) {
+	    public Result<Object> updateProject(@RequestBody ProjectManage projectInfo) {
 		   Result<Object> res=new Result<>();
 		   Boolean isSucc=dataop.updateProject(projectInfo);
 		   if(isSucc) {

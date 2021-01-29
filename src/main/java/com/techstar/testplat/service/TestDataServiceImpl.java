@@ -8,30 +8,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.autotest.data.mode.*;
-import com.autotest.data.mode.custom.ProjectInfoEntity;
+import com.autotest.data.mode.confelement.ApiHeader;
 import com.autotest.data.service.impl.*;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 @Component
 @Transactional(rollbackFor=Exception.class)
 public class TestDataServiceImpl  {
 
-	private @Autowired ApiHeaderServiceImpl apiHeader;
 	private @Autowired TheadGroupConfigServiceImpl theadGroupConfig;
 	private @Autowired ApiTestcaseServiceImpl apiTestcase;
-	private @Autowired UserDefinedVariableServiceImpl userDefinedVar;
 	private @Autowired TestScheduledServiceImpl testSchedule;
 	private @Autowired ApiReportServiceImpl apiReport;
 	private @Autowired SyetemDictionaryServiceImpl syetemDic;
 	private @Autowired  ProjectManageServiceImpl projectManage;
-	private @Autowired  ProcessorJdbcServiceImpl jdbcProcess;
 	private @Autowired  SyetemDbServiceImpl sysDb;
 	private @Autowired  ApiMockServiceImpl mockData;
 	private @Autowired  TestScheduledServiceImpl testScheduled;
-	private @Autowired BeanshellServiceImpl shellServer;
 	private @Autowired SyetemEnvServiceImpl envServer;
-	private List<ApiHeader> headers;
 
 	public boolean AddScheduled(TestScheduled ts) {
 		boolean issuccess=testScheduled.saveOrUpdate(ts);
@@ -52,29 +46,24 @@ public class TestDataServiceImpl  {
         boolean issuccess=testScheduled.removeByIds(ts);
 		return issuccess;
 	}
-	public List<ApiHeader> getApiHeader() {
-		List<ApiHeader> apiHeaders=apiHeader.list();
-		headers=apiHeaders;
-		return apiHeaders;
-	}
 	
 	public Map<String, String> getTestPlanHeader(int projectID){
-		getApiHeader();
+		QueryWrapper<ProjectManage> queryWrapper=new QueryWrapper<ProjectManage>();
+		queryWrapper.lambda().eq(ProjectManage::getProjectId, projectID)
+							 .select(ProjectManage::getHeaders);
+		List<ApiHeader> headers=projectManage.getOne(queryWrapper).getHeaders();
 		Map<String, String> headerMap=new HashMap<String, String>();
-		for (ApiHeader header : headers) {
-			if(header.getProjectId().equals(projectID)&&header.getCaseId().equals(-1))
-				headerMap.put(header.getKey(), header.getValue());
-		}
+		headers.forEach(header->headerMap.put(header.getKey(), header.getValue()));
 		return headerMap;
 	} 
-	public Map<String, String>  getSamplerHeader(int projectID,int caseID){
-		Map<String, String> headerMap=new HashMap<String, String>();
-		for (ApiHeader header : headers) {
-			if(header.getProjectId().equals(projectID)&&header.getCaseId().equals(caseID))
-				headerMap.put(header.getKey(), header.getValue());
-		}
-		return headerMap;
-	}
+//	public Map<String, String>  getSamplerHeader(int projectID,int caseID){
+//		Map<String, String> headerMap=new HashMap<String, String>();
+//		for (ApiHeader header : headers) {
+//			if(header.getProjectId().equals(projectID)&&header.getCaseId().equals(caseID))
+//				headerMap.put(header.getKey(), header.getValue());
+//		}
+//		return headerMap;
+//	}
 	public List<SyetemDictionary> getSyetemDic() {
 		return syetemDic.list();
 	}
@@ -104,9 +93,6 @@ public class TestDataServiceImpl  {
 	public List<ApiTestcase> getTestcase() {
 		return apiTestcase.list();
 	}
-	public List<UserDefinedVariable> getUserDefinedVar() {
-		return userDefinedVar.list();
-	}
 	public ProjectManage getPoject(String projetID) {
 		List<ProjectManage> list=projectManage.list();
 		for (ProjectManage projectManage : list) {
@@ -125,14 +111,6 @@ public class TestDataServiceImpl  {
 		QueryWrapper<SyetemEnv> queryWrapper=new QueryWrapper<>();
 		queryWrapper.lambda().eq(SyetemEnv::getId, envId);
 		return envServer.remove(queryWrapper);
-	}
-	public ProcessorJdbc getProcessorJdbc(int id) {
-		List<ProcessorJdbc> list=jdbcProcess.list();
-		for (ProcessorJdbc processor : list) {
-			if(processor.getCaseId().equals(id)) {}
-				return processor;
-		}
-		return null;
 	}
 	public SyetemDb getSyetemDb(String cnnName) {
 		List<SyetemDb> list=sysDb.list();
@@ -166,38 +144,17 @@ public class TestDataServiceImpl  {
 		return null;
 	}
 	
-	public Boolean addProject(ProjectInfoEntity project) {
-		ProjectManage projectInfo=project.getProject();
+	public Boolean addProject(ProjectManage projectInfo) {
 		Boolean isProjectSucc=projectManage.save(projectInfo);
-		if(isProjectSucc) {
-			List<ApiHeader> headers=project.getHeader();
-			headers.forEach(item->item.setProjectId(projectInfo.getProjectId()));
-			Boolean isheaderSucc=apiHeader.saveBatch(headers);
-			List<UserDefinedVariable> udvs=project.getUdv();
-			udvs.forEach(item->item.setProjectId(projectInfo.getProjectId()));
-			Boolean isudvSucc=userDefinedVar.saveBatch(udvs);
-			isProjectSucc=isProjectSucc&&isheaderSucc&&isudvSucc;
-		}
+
 		return isProjectSucc;
 	}
 	
-	public Boolean updateProject(ProjectInfoEntity project) {
-		ProjectManage projectInfo=project.getProject();
+	public Boolean updateProject(ProjectManage projectInfo) {
 		UpdateWrapper<ProjectManage> projectWrapper=new UpdateWrapper<>();
 		projectWrapper.lambda().eq(ProjectManage::getProjectId, projectInfo.getProjectId());
-		Boolean isProjectSucc=projectManage.update(projectWrapper);
-		
-		List<ApiHeader> headers=project.getHeader();
-		QueryWrapper<ApiHeader> wrapper=new QueryWrapper<>();
-		wrapper.lambda().eq(ApiHeader::getProjectId, projectInfo.getProjectId()).eq(ApiHeader::getCaseId, -1);
-		apiHeader.remove(wrapper);
-		apiHeader.saveBatch(headers);
-		
-		List<UserDefinedVariable> udvs=project.getUdv();
-		QueryWrapper<UserDefinedVariable> udvWrapper=new QueryWrapper<>();
-		udvWrapper.lambda().eq(UserDefinedVariable::getProjectId, projectInfo.getProjectId()).eq(UserDefinedVariable::getCaseId, -1);
-		userDefinedVar.remove(udvWrapper);
-		userDefinedVar.saveBatch(udvs);
+		Boolean isProjectSucc=projectManage.update(projectInfo, projectWrapper);//(projectInfo,projectWrapper)
+
 		return isProjectSucc;
 	}
 	
@@ -207,14 +164,6 @@ public class TestDataServiceImpl  {
 		projectWrapper.lambda().eq(ProjectManage::getProjectId, projectId);
 		Boolean isProjectSucc=projectManage.remove(projectWrapper);
 		
-		QueryWrapper<ApiHeader> wrapper=new QueryWrapper<>();
-		wrapper.lambda().eq(ApiHeader::getProjectId, projectId).eq(ApiHeader::getCaseId, -1);
-		Boolean isHeaderSucc =apiHeader.remove(wrapper);
-		
-		QueryWrapper<UserDefinedVariable> udvWrapper=new QueryWrapper<>();
-		udvWrapper.lambda().eq(UserDefinedVariable::getProjectId, projectId).eq(UserDefinedVariable::getCaseId, -1);
-		Boolean isudv =userDefinedVar.remove(udvWrapper);
-		isSucc=isProjectSucc&&isHeaderSucc&&isudv;
-		return isSucc;
+		return isProjectSucc;
 	}
 }

@@ -1,0 +1,70 @@
+{
+    "arguments": [
+        {
+            "desc": "",
+            "name": "userName",
+            "value": "xtgly"
+        },
+        {
+            "desc": "",
+            "name": "pwd",
+            "value": "a1234567"
+        },
+        {
+            "desc": "",
+            "name": "sleep",
+            "value": "5000"
+        },
+        {
+            "desc": "",
+            "name": "sysid",
+            "value": "266946423468851203"
+        },
+        {
+            "desc": "",
+            "name": "smDecryptKey",
+            "value": "e9664b2bebccb6fe80da086044608115"
+        }
+    ],
+    "headers": [
+        {
+            "key": "Referer",
+            "value": "http://172.16.206.69:6600/"
+        },
+        {
+            "key": "Accept-Language",
+            "value": "zh-CN,zh;q=0.9"
+        },
+        {
+            "key": "Origin",
+            "value": "http://172.16.206.69:6600"
+        },
+        {
+            "key": "Content-Type",
+            "value": "application/json"
+        },
+        {
+            "key": "Accept-Encoding",
+            "value": "gzip, deflate"
+        },
+        {
+            "key": "Accept",
+            "value": "application/json, text/plain, */*"
+        },
+        {
+            "key": "User-Agent",
+            "value": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36"
+        },
+        {
+            "key": "Authorization",
+            "value": "Bearer ${author}"
+        },
+        {
+            "key": "Connection",
+            "value": "keep-alive"
+        }
+    ],
+    "projectDesc": "ITMG接口地址",
+    "projectId": null,
+    "projectName": "ITMG项目"
+}
