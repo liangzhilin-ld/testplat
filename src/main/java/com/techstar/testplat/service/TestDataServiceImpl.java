@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 public class TestDataServiceImpl  {
 
 	private @Autowired TheadGroupConfigServiceImpl theadGroupConfig;
-	private @Autowired ApiTestcaseServiceImpl apiTestcase;
+//	private @Autowired ApiTestcaseServiceImpl apiTestcase;
 	private @Autowired TestScheduledServiceImpl testSchedule;
 	private @Autowired ApiReportServiceImpl apiReport;
 	private @Autowired SyetemDictionaryServiceImpl syetemDic;
@@ -53,7 +53,7 @@ public class TestDataServiceImpl  {
 							 .select(ProjectManage::getHeaders);
 		List<ApiHeader> headers=projectManage.getOne(queryWrapper).getHeaders();
 		Map<String, String> headerMap=new HashMap<String, String>();
-		headers.forEach(header->headerMap.put(header.getKey(), header.getValue()));
+		headers.forEach(header->headerMap.put(header.getName(), header.getValue()));
 		return headerMap;
 	} 
 //	public Map<String, String>  getSamplerHeader(int projectID,int caseID){
@@ -90,9 +90,9 @@ public class TestDataServiceImpl  {
 	public List<TheadGroupConfig> getTheadGroupConfig() {
 		return theadGroupConfig.list();
 	}
-	public List<ApiTestcase> getTestcase() {
-		return apiTestcase.list();
-	}
+//	public List<ApiTestcase> getTestcase() {
+//		return apiTestcase.list();
+//	}
 	public ProjectManage getPoject(String projetID) {
 		List<ProjectManage> list=projectManage.list();
 		for (ProjectManage projectManage : list) {
@@ -159,7 +159,6 @@ public class TestDataServiceImpl  {
 	}
 	
 	public Boolean deleteProject(int projectId) throws Exception {
-		Boolean isSucc=false;
 		UpdateWrapper<ProjectManage> projectWrapper=new UpdateWrapper<>();
 		projectWrapper.lambda().eq(ProjectManage::getProjectId, projectId);
 		Boolean isProjectSucc=projectManage.remove(projectWrapper);

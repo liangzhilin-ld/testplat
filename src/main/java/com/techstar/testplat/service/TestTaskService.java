@@ -83,7 +83,7 @@ public class TestTaskService implements SchedulingConfigurer{
     	            public void run() {
     	            	log.info(trig.getId()+"任务开始执行。。。。。");
     	            	String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
-    	            	String caseIds=trig.getTcCaseids();
+    	            	List<Integer> caseIds=trig.getTcCaseids().get("samplerIds");
     	            	if(!caseIds.isEmpty()) {
     	            		ApiReportHistoryList listHistory=new ApiReportHistoryList();
     	            		listHistory.setJobId(trig.getId());
@@ -94,9 +94,9 @@ public class TestTaskService implements SchedulingConfigurer{
     	            		listHistory.setSerVersion("");
     	            		Boolean isSucc=historyReport.save(listHistory);
     	            		if(isSucc) {
-    	            			for (String caseid : caseIds.split(",")) {
+    	            			for (Integer caseid : caseIds) {
             	            		ApiReport detail = new ApiReport();
-            	            		detail.setCaseId(Integer.parseInt(caseid));
+            	            		detail.setCaseId(caseid);
             	            		detail.setJobId(trig.getId());
             	            		detail.setHistoryId(listHistory.getId());
             	            		detail.setTcRunsNum(0);

@@ -28,39 +28,39 @@
     ],
     "headers": [
         {
-            "key": "Referer",
+            "name": "Referer",
             "value": "http://172.16.206.69:6600/"
         },
         {
-            "key": "Accept-Language",
+            "name": "Accept-Language",
             "value": "zh-CN,zh;q=0.9"
         },
         {
-            "key": "Origin",
+            "name": "Origin",
             "value": "http://172.16.206.69:6600"
         },
         {
-            "key": "Content-Type",
+            "name": "Content-Type",
             "value": "application/json"
         },
         {
-            "key": "Accept-Encoding",
+            "name": "Accept-Encoding",
             "value": "gzip, deflate"
         },
         {
-            "key": "Accept",
+            "name": "Accept",
             "value": "application/json, text/plain, */*"
         },
         {
-            "key": "User-Agent",
+            "name": "User-Agent",
             "value": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36"
         },
         {
-            "key": "Authorization",
+            "name": "Authorization",
             "value": "Bearer ${author}"
         },
         {
-            "key": "Connection",
+            "name": "Connection",
             "value": "keep-alive"
         }
     ],

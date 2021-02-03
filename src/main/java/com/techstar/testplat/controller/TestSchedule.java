@@ -42,11 +42,11 @@ public class TestSchedule{
         try {
         	dataOp.AddScheduled(plan);   
         	if(plan.getIsStartNow()) {
-        		String id=plan.getId();      
-            	String[] caseids=plan.getTcCaseids().split(",");
-            	for (String caseid : caseids) {
+        		String id=plan.getId();
+            	List<Integer> caseids=plan.getTcCaseids().get("samplerIds");
+            	for (Integer caseid : caseids) {
             		ApiReport detail = new ApiReport();
-            		detail.setCaseId(Integer.parseInt(caseid));
+            		detail.setCaseId(caseid);
             		detail.setJobId(id);
             		dataOp.addApiReport(detail);
         		}
