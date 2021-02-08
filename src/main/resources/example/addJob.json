@@ -1,0 +1,26 @@
+{
+    "createTime": "2021-01-30T04:54:45.150Z",
+    "endTime": "string",
+    "expression": "string",
+    "historyId": "string",
+    "id": "1",
+    "isStartNow": true,
+    "jobName": "string",
+    "jobStatus": "string",
+    "notifyType": "string",
+    "numOfConcurrent": 1,
+    "retry": 0,
+    "serVersion": "string",
+    "startTime": "string",
+    "tcCaseids": {
+        "samplerIds": [
+            1
+        ],
+        "scenarioIds": []
+    },
+    "tcFailed": 0,
+    "tcPassed": 0,
+    "tcTotal": 0,
+    "testIp": "172.16.206.127",
+    "testPort": "31100"
+}

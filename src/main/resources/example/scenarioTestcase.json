@@ -28,7 +28,7 @@
         {
             "type": "LoginController",
             "id": 1,
-            "name": "ÆäËû",
+            "name": "Âß¼­¿ØÖÆÆ÷",
             "hashtree": [
                 {
                     "type": "HTTPSampler",

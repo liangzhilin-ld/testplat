@@ -1,5 +1,5 @@
 {
-    "apiIn": "query",
+    "apiIn": "body",
     "apiMethod": "POST",
     "apiName": "pw",
     "apiProtocol": "http",
@@ -59,7 +59,7 @@
         }
     ],
     "headers": [],
-    "parameters": "",
+    "parameters": "{\"username\":\"${username}\",\"password\":\"${password}\",\"icode\":\"${icode}\",\"deviceId\":\"${deviceId}\",\"id\":\"${id}\"}",
     "priority": "¸ß",
     "projectId": 0,
     "suiteId": 1,

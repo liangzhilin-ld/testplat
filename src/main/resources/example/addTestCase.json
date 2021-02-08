@@ -26,11 +26,12 @@
                     "type": "BeanShellPreProcessor"
                 }
             ],
-            "dummySampler": {
-                "additionalProp1": "string",
-                "additionalProp2": "string",
-                "additionalProp3": "string"
-            },
+            "dummySampler":[ 
+            	{
+                	"id": "string",
+                	"name": "string"
+            	}
+            ],
             "jdbcPreProcessor": [
                 {
                     "handleResultset": "string",
