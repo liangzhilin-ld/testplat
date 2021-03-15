@@ -17,18 +17,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.autotest.data.mode.ApiReport;
 import com.autotest.data.mode.ApiReportHistoryList;
+import com.autotest.data.mode.ScenarioReport;
+import com.autotest.data.mode.ScenarioTestcase;
 import com.autotest.data.mode.TestScheduled;
 import com.autotest.data.service.impl.ApiReportHistoryListServiceImpl;
 import com.autotest.data.service.impl.ApiReportServiceImpl;
+import com.autotest.data.service.impl.ScenarioReportServiceImpl;
 import com.autotest.data.service.impl.TestScheduledServiceImpl;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.techstar.testplat.config.TestPlatProperties;
+
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.apachecommons.CommonsLog;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -40,8 +49,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 @CommonsLog
 @Transactional(rollbackFor=Exception.class)
 public class TestTaskService implements SchedulingConfigurer{
+	private @Autowired TestPlatProperties myProperties;
 	private @Autowired TestScheduledServiceImpl trigger;
-	private @Autowired ApiReportServiceImpl apiReport;
+	private @Autowired ScenarioReportServiceImpl apiReport;
 	private @Autowired ApiReportHistoryListServiceImpl historyReport;
 	private ScheduledTaskRegistrar taskRegistrar;
 	private Map<String, ScheduledFuture<?>> taskFutures = new ConcurrentHashMap<>();
@@ -85,31 +95,26 @@ public class TestTaskService implements SchedulingConfigurer{
     	            	String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
     	            	List<Integer> caseIds=trig.getTcCaseids().get("samplerIds");
     	            	if(!caseIds.isEmpty()) {
-    	            		ApiReportHistoryList listHistory=new ApiReportHistoryList();
-    	            		listHistory.setJobId(trig.getId());
-    	            		listHistory.setJobName(trig.getJobName());
-    	            		listHistory.setStartTime(LocalDateTime.now());
-    	            		listHistory.setCreateTime(LocalDateTime.now());
-    	            		listHistory.setNotifyType(trig.getNotifyType());
-    	            		listHistory.setSerVersion("");
-    	            		Boolean isSucc=historyReport.save(listHistory);
-    	            		if(isSucc) {
-    	            			for (Integer caseid : caseIds) {
-            	            		ApiReport detail = new ApiReport();
-            	            		detail.setCaseId(caseid);
-            	            		detail.setJobId(trig.getId());
-            	            		detail.setHistoryId(listHistory.getId());
-            	            		detail.setTcRunsNum(0);
-            	            		detail.setCreateTime(LocalDateTime.now());
-            	            		apiReport.saveOrUpdate(detail);
-            	        		}
+    	            		ApiReportHistoryList listHistory=saveApiReportHistoryList(trig);
+    	            		trig.setTestIp("172.16.206.127");
+    	            		trig.setTestPort("31100");
+    	            		if(listHistory.getId().length()>0) {
+    	            			
+    	            			for (Entry<String, List<Integer>> entiy : trig.getTcCaseids().entrySet()) {
+    	            				ScenarioReport detail=new ScenarioReport();
+    	            				if(entiy.getKey().equals("scenarioIds"))
+    	            					detail.setTcType(ScenarioTestcase.TYPE_SCENARIO);
+    	            				for (Integer id : entiy.getValue()) {
+    	            					detail.setTcId(id.toString());
+    	            					detail.setJobId(trig.getId());
+    	            					detail.setHistoryId(listHistory.getId());
+    	            					apiReport.save(detail);
+									}
+								}
+    	            			//startTest(trig);
     	            		}
+    	            		
     	            	}
-//    	            	QueryWrapper<ApiReport> queryWrapper=new QueryWrapper<>();
-//    	            	queryWrapper.lambda().eq(ApiReport::getJobId, trig.getId())
-//    	            						 .select(ApiReport::getJobId);
-//    	            	List<ApiReport> apiDeatil=apiReport.list(queryWrapper);
-    	            	
     	            }
     	    	},
     			new Trigger() {
@@ -205,4 +210,33 @@ public class TestTaskService implements SchedulingConfigurer{
         taskScheduler.setAwaitTerminationSeconds(60);
         return taskScheduler;
     }
+    
+    
+    public ApiReportHistoryList saveApiReportHistoryList(TestScheduled trig) {
+    	ApiReportHistoryList listHistory=new ApiReportHistoryList();
+		listHistory.setJobId(trig.getId());
+		listHistory.setJobName(trig.getJobName());
+		listHistory.setStartTime(LocalDateTime.now());
+		listHistory.setCreateTime(LocalDateTime.now());
+		listHistory.setNotifyType(trig.getNotifyType());
+		listHistory.setSerVersion("");
+		historyReport.save(listHistory);
+		trig.setHistoryId(listHistory.getId());
+		return listHistory;
+    }
+    public String startTest(TestScheduled trig) {
+    	String bb=JSONUtil.toJsonStr(trig);
+    	String result=HttpRequest.post(myProperties.getJmeterAgentUrl())
+        		.header(Header.ACCEPT, "application/json, text/plain, */*")
+        		.header(Header.ACCEPT_ENCODING, "gzip, deflate")
+        		.header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7")
+        		.header(Header.CONNECTION, "keep-alive")
+        		.header(Header.CONTENT_TYPE, "application/json")
+        		.header(Header.USER_AGENT, "Hutool http")
+        	    .timeout(20000)//超时，毫秒
+        	    .body(JSONUtil.parse(trig))
+        	    .execute().body();
+    	return result;
+    }
+    	
 }

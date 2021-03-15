@@ -1,4 +1,4 @@
-package com.techstar.testplat.config;
+package com.techstar.testplat.common;
 
 import lombok.Getter;
 import lombok.Setter;

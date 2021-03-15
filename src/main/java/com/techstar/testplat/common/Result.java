@@ -1,4 +1,4 @@
-package com.techstar.testplat.config;
+package com.techstar.testplat.common;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

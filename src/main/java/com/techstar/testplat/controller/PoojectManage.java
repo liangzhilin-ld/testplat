@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ProjectManage;
-import com.techstar.testplat.config.CodeMsg;
-import com.techstar.testplat.config.Result;
+import com.techstar.testplat.common.CodeMsg;
+import com.techstar.testplat.common.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
 
 import io.swagger.annotations.Api;

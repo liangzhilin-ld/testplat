@@ -19,7 +19,7 @@ public class TestDataServiceImpl  {
 	private @Autowired TheadGroupConfigServiceImpl theadGroupConfig;
 //	private @Autowired ApiTestcaseServiceImpl apiTestcase;
 	private @Autowired TestScheduledServiceImpl testSchedule;
-	private @Autowired ApiReportServiceImpl apiReport;
+	private @Autowired ScenarioReportServiceImpl apiReport;
 	private @Autowired SyetemDictionaryServiceImpl syetemDic;
 	private @Autowired  ProjectManageServiceImpl projectManage;
 	private @Autowired  SyetemDbServiceImpl sysDb;
@@ -70,18 +70,20 @@ public class TestDataServiceImpl  {
 	public List<TestScheduled> getTestSchedule() {
 		return testSchedule.list();
 	}
-	public List<ApiReport> getApiReport() {
+	public List<ScenarioReport> getApiReport() {
 		return apiReport.list();
 	}
-	public boolean addApiReport(ApiReport report) {
+	public boolean addApiReport(ScenarioReport report) {
 		return apiReport.save(report);
 	}
+	
+	
 	public boolean delApiReport(List<String> ts) {
 		//QueryWrapper<ApiReport> queryWrapper = new QueryWrapper<>();
 		boolean flag=false;
 		for (String str : ts) {
-			QueryWrapper<ApiReport> queryWrapper = new QueryWrapper<>();
-			queryWrapper.lambda().eq(ApiReport::getJobId, str);//"JOB_ID"
+			QueryWrapper<ScenarioReport> queryWrapper = new QueryWrapper<>();
+			queryWrapper.lambda().eq(ScenarioReport::getJobId, str);
 			flag=apiReport.remove(queryWrapper);
 		}
         

@@ -15,11 +15,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ApiReport;
+import com.autotest.data.mode.ScenarioReport;
 import com.autotest.data.mode.TestScheduled;
 import com.autotest.data.service.impl.TestScheduledServiceImpl;
-import com.techstar.testplat.config.CodeMsg;
-import com.techstar.testplat.config.Result;
+import com.techstar.testplat.common.CodeMsg;
+import com.techstar.testplat.common.Result;
+import com.techstar.testplat.config.TestPlatProperties;
 import com.techstar.testplat.service.TestTaskService;
+
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+
 import com.techstar.testplat.service.TestDataServiceImpl;
 
 @Api(tags = "测试计划管理")
@@ -42,15 +48,9 @@ public class TestSchedule{
         try {
         	dataOp.AddScheduled(plan);   
         	if(plan.getIsStartNow()) {
-        		String id=plan.getId();
-            	List<Integer> caseids=plan.getTcCaseids().get("samplerIds");
-            	for (Integer caseid : caseids) {
-            		ApiReport detail = new ApiReport();
-            		detail.setCaseId(caseid);
-            		detail.setJobId(id);
-            		dataOp.addApiReport(detail);
-        		}
-            	return res;
+        		defaultSchedulingConfigurer.saveApiReportHistoryList(plan);
+        		String ressult=defaultSchedulingConfigurer.startTest(plan);
+            	return res.setSuccess(ressult);
         	}
         	defaultSchedulingConfigurer.addTriggerTask(plan);
         } catch (Exception e) {
@@ -58,7 +58,6 @@ public class TestSchedule{
             CodeMsg codeMsg = CodeMsg.PARAMS_INVALID_DETAIL;
             codeMsg.setMsg(e.getMessage());
             res=res.fail(codeMsg);
-			// TODO: handle exception
 		}    	
     	return res;
     }

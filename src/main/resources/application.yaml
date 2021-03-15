@@ -37,3 +37,13 @@ mybatis-plus:
       logic-not-delete-value: 1
       # 删除后
       logic-delete-value: 0
+testplat:
+  loginHost: http://172.16.206.69:6600
+  swaggerUrl: http://172.16.206.127:31100/platform/v2/api-docs
+  jmeterAgentUrl: http://127.0.0.1:9090/startTest
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+   

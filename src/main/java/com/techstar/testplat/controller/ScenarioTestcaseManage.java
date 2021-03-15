@@ -16,7 +16,7 @@ import com.autotest.data.mode.ScenarioTestcase;
 import com.autotest.data.service.impl.HttpTestcaseServiceImpl;
 import com.autotest.data.service.impl.ScenarioTestcaseServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.techstar.testplat.config.Result;
+import com.techstar.testplat.common.Result;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

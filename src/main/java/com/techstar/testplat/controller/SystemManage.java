@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.SyetemDb;
 import com.autotest.data.mode.SyetemEnv;
 import com.autotest.data.service.impl.SyetemDictionaryServiceImpl;
-import com.techstar.testplat.config.CodeMsg;
-import com.techstar.testplat.config.Result;
+import com.techstar.testplat.common.CodeMsg;
+import com.techstar.testplat.common.Result;
 import com.techstar.testplat.service.TestDataServiceImpl;
 
 import io.swagger.annotations.Api;

@@ -24,8 +24,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 //import com.autotest.data.service.impl.BeanshellServiceImpl;
 //import com.autotest.data.service.impl.ProcessorJdbcServiceImpl;
 //import com.autotest.data.service.impl.ProcessorJsonServiceImpl;
-import com.techstar.testplat.config.CodeMsg;
-import com.techstar.testplat.config.Result;
+import com.techstar.testplat.common.CodeMsg;
+import com.techstar.testplat.common.Result;
 
 @Api(tags = "用例管理")
 @Validated
