@@ -10,8 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.autotest.data.mode.*;
 import com.autotest.data.mode.confelement.ApiHeader;
 import com.autotest.data.service.impl.*;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.techstar.testplat.common.PageBaseInfo;
 @Component
 @Transactional(rollbackFor=Exception.class)
 public class TestDataServiceImpl  {
@@ -26,9 +30,9 @@ public class TestDataServiceImpl  {
 	private @Autowired  ApiMockServiceImpl mockData;
 	private @Autowired  TestScheduledServiceImpl testScheduled;
 	private @Autowired SyetemEnvServiceImpl envServer;
-
+	private @Autowired TestSuitesServiceImpl treeData;
 	public boolean AddScheduled(TestScheduled ts) {
-		boolean issuccess=testScheduled.saveOrUpdate(ts);
+		boolean issuccess=testScheduled.save(ts);
 		
 		return issuccess;
 	}
@@ -67,8 +71,13 @@ public class TestDataServiceImpl  {
 	public List<SyetemDictionary> getSyetemDic() {
 		return syetemDic.list();
 	}
-	public List<TestScheduled> getTestSchedule() {
-		return testSchedule.list();
+	public PageBaseInfo getTestSchedule(long current,long size,QueryWrapper<TestScheduled> wrapper) {
+		
+		IPage<TestScheduled> pageobj = new Page<>(current, size);
+    	pageobj=testSchedule.page(pageobj,wrapper);
+    	PageBaseInfo pb=new PageBaseInfo(pageobj.getRecords(), current, pageobj.getTotal(),size);
+		
+		return pb;
 	}
 	public List<ScenarioReport> getApiReport() {
 		return apiReport.list();
@@ -114,6 +123,10 @@ public class TestDataServiceImpl  {
 		queryWrapper.lambda().eq(SyetemEnv::getId, envId);
 		return envServer.remove(queryWrapper);
 	}
+	public List<SyetemEnv> getSyetemEnv() {
+		
+		return envServer.list();
+	}
 	public SyetemDb getSyetemDb(String cnnName) {
 		List<SyetemDb> list=sysDb.list();
 		for (SyetemDb dbinfo : list) {
@@ -136,6 +149,14 @@ public class TestDataServiceImpl  {
 		queryWrapper.lambda().eq(SyetemDb::getCnnId,connId);
 		return sysDb.remove(queryWrapper);
 	}
+	public PageBaseInfo listSyetemDb(long current, long pageSize,LambdaQueryWrapper<SyetemDb> queryWrapper) throws Exception {
+		
+		IPage<SyetemDb> page = new Page<>(current, pageSize);
+		page=sysDb.page(page,queryWrapper);
+		return new PageBaseInfo(page.getRecords(),current,page.getTotal(),pageSize);
+	}
+	
+	
 	
 	public ApiMock getApiMock(int caseID) {
 		List<ApiMock> list=mockData.list();
@@ -166,5 +187,13 @@ public class TestDataServiceImpl  {
 		Boolean isProjectSucc=projectManage.remove(projectWrapper);
 		
 		return isProjectSucc;
+	}
+
+	public PageBaseInfo listProject(long current, long pageSize,LambdaQueryWrapper<ProjectManage> queryWrapper) throws Exception {
+		
+		IPage<ProjectManage> page = new Page<>(current, pageSize);
+		page=projectManage.page(page,queryWrapper);
+		
+		return new PageBaseInfo(page.getRecords(),current,page.getTotal(),pageSize);
 	}
 }

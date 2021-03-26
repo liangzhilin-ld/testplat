@@ -42,30 +42,36 @@ public class Result<T> implements Serializable{
         this.data=data;
     }
 
-    public Result success() {
+    @SuppressWarnings("rawtypes")
+	public Result success() {
         return  new Result(CodeMsg.SUCCESS);
     }
 
-    public Result success(Object data) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Result success(Object data) {
     	return  new Result(CodeMsg.SUCCESS,data);
     }
 
-    public Result fail(CodeMsg codeMsg) {
+    @SuppressWarnings("rawtypes")
+	public Result fail(CodeMsg codeMsg) {
     	return new Result(codeMsg);
     }
 
-    public static Result setSuccess(Object data) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Result setSuccess(Object data) {
     	return  new Result(CodeMsg.SUCCESS,data);
     }
-    public static Result createfail(CodeMsg codeMsg) {
-        Result result=new Result();
+    @SuppressWarnings("rawtypes")
+	public static Result createfail(CodeMsg codeMsg) {
+		Result result=new Result();
         result.setCode(codeMsg.getCode());
         result.setMsg(codeMsg.getMsg());
         return result;
     }
 
     //spring 参数绑定错误处理
-    public static Result deployBindingErr(BindingResult bindingResult){
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Result deployBindingErr(BindingResult bindingResult){
         List<String> bindingErrorInfoList=new ArrayList<String>();
         bindingResult.getAllErrors().stream().forEach(
                 objectError -> {

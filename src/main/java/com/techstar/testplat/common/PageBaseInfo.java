@@ -2,9 +2,9 @@ package com.techstar.testplat.common;
 
 import java.util.List;
 
-public class PageBaseInfo<T> {
+public class PageBaseInfo {
 	//需要显示的数据集  每页显示的数据量
-	private List<T> content;
+	private Object content;
 	//当前页
 	private long current;
 	//总页数
@@ -22,7 +22,7 @@ public class PageBaseInfo<T> {
 		this.size= NO_SIZE;
 	}
 	
-	public PageBaseInfo(List<T> content, long current, long records, long size) {
+	public PageBaseInfo(Object content, long current, long records, long size) {
 		this.content = content;//数据集合
 		this.current = current;//当前页
 		this.records = records;//总记录数
@@ -38,12 +38,12 @@ public class PageBaseInfo<T> {
 		this.size = size;
 	}
  
-	@SuppressWarnings("rawtypes")
-	public List getContent() {
+	
+	public Object getContent() {
 		return content;
 	}
  
-	public void setRows(List<T> content) {
+	public void setRows(Object content) {
 		this.content = content;
 	}
  

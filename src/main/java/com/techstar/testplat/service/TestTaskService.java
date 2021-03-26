@@ -28,6 +28,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.techstar.testplat.config.TestPlatProperties;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.json.JSONUtil;
@@ -58,15 +59,21 @@ public class TestTaskService implements SchedulingConfigurer{
 //    private Set<ScheduledFuture<?>> scheduledFutures = null;
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+    	
     	this.taskRegistrar = taskRegistrar;
         taskRegistrar.setScheduler(taskExecutor());
     	//taskRegistrar.setTaskScheduler(myThreadPoolTaskScheduler);
         List<TestScheduled>  crons=trigger.list();
         TaskScheduler scheduler=taskRegistrar.getScheduler();
         for (TestScheduled schedul : crons) {
-        	TriggerTask triggerTask=this.createTriggerTask(schedul);
-        	ScheduledFuture<?> future = scheduler.schedule(triggerTask.getRunnable(), triggerTask.getTrigger());
-        	taskFutures.put(schedul.getId().toString(), future);
+        	try {
+        		TriggerTask triggerTask=this.createTriggerTask(schedul);
+            	ScheduledFuture<?> future = scheduler.schedule(triggerTask.getRunnable(), triggerTask.getTrigger());
+            	taskFutures.put(schedul.getId().toString(), future);
+			} catch (Exception e) {
+				System.out.println(e.getMessage());
+			}
+        	
 		}
         System.out.println(inited());//初始化    
     }
@@ -92,7 +99,7 @@ public class TestTaskService implements SchedulingConfigurer{
     	            @Override
     	            public void run() {
     	            	log.info(trig.getId()+"任务开始执行。。。。。");
-    	            	String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
+    	            	//String historyId=DateUtil.format(new Date(), "yyyyMMddHHmmssSSS");
     	            	List<Integer> caseIds=trig.getTcCaseids().get("samplerIds");
     	            	if(!caseIds.isEmpty()) {
     	            		ApiReportHistoryList listHistory=saveApiReportHistoryList(trig);
@@ -102,7 +109,7 @@ public class TestTaskService implements SchedulingConfigurer{
     	            			
     	            			for (Entry<String, List<Integer>> entiy : trig.getTcCaseids().entrySet()) {
     	            				ScenarioReport detail=new ScenarioReport();
-    	            				if(entiy.getKey().equals("scenarioIds"))
+    	            				if(entiy.getKey().equals(TestScheduled.TYPE_SCENARIO))
     	            					detail.setTcType(ScenarioTestcase.TYPE_SCENARIO);
     	            				for (Integer id : entiy.getValue()) {
     	            					detail.setTcId(id.toString());
@@ -122,7 +129,7 @@ public class TestTaskService implements SchedulingConfigurer{
     	    		public Date nextExecutionTime(TriggerContext triggerContext) {
     	    			String s=trig.getExpression();
     	    			if (StringUtils.isEmpty(s)) {
-    	    				log.error("任务时间为空");
+    	    				log.warn(StrUtil.format("任务时间为空! --ID:{},任务名称:{}",trig.getId(),trig.getJobName()));
     	    			}
     	    			// 任务触发，可修改任务的执行周期
     	    			CronTrigger trigger = new CronTrigger(s);//TriggerTask第2个参数可直接用new CronTrigger方式
@@ -214,26 +221,43 @@ public class TestTaskService implements SchedulingConfigurer{
     
     public ApiReportHistoryList saveApiReportHistoryList(TestScheduled trig) {
     	ApiReportHistoryList listHistory=new ApiReportHistoryList();
+    	int sampleraSize=trig.getTcCaseids().get(TestScheduled.TYPE_SAMPLER).size();
+		int scenarioSize=trig.getTcCaseids().get(TestScheduled.TYPE_SCENARIO).size();
 		listHistory.setJobId(trig.getId());
 		listHistory.setJobName(trig.getJobName());
 		listHistory.setStartTime(LocalDateTime.now());
 		listHistory.setCreateTime(LocalDateTime.now());
 		listHistory.setNotifyType(trig.getNotifyType());
 		listHistory.setSerVersion("");
+		listHistory.setTcTotal(String.valueOf(sampleraSize+scenarioSize));
 		historyReport.save(listHistory);
 		trig.setHistoryId(listHistory.getId());
 		return listHistory;
     }
+    
+    public void addReport(TestScheduled trig,String historyId) {
+    	for (Entry<String, List<Integer>> entiy : trig.getTcCaseids().entrySet()) {
+			ScenarioReport detail=new ScenarioReport();
+			if(entiy.getKey().equals(TestScheduled.TYPE_SCENARIO))
+				detail.setTcType(ScenarioTestcase.TYPE_SCENARIO);
+			for (Integer id : entiy.getValue()) {
+				detail.setTcId(id.toString());
+				detail.setJobId(trig.getId());
+				detail.setHistoryId(historyId);
+				apiReport.save(detail);
+			}
+		}
+    }
+    
     public String startTest(TestScheduled trig) {
-    	String bb=JSONUtil.toJsonStr(trig);
-    	String result=HttpRequest.post(myProperties.getJmeterAgentUrl())
+    	String result=HttpRequest.post(myProperties.getJmeterAgentUrl()+"/startTest")
         		.header(Header.ACCEPT, "application/json, text/plain, */*")
         		.header(Header.ACCEPT_ENCODING, "gzip, deflate")
         		.header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7")
         		.header(Header.CONNECTION, "keep-alive")
         		.header(Header.CONTENT_TYPE, "application/json")
         		.header(Header.USER_AGENT, "Hutool http")
-        	    .timeout(20000)//超时，毫秒
+        	    .timeout(10000)//超时，毫秒
         	    .body(JSONUtil.parse(trig))
         	    .execute().body();
     	return result;

@@ -3,37 +3,29 @@ package com.techstar.testplat.swagger;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.annotation.PostConstruct;
-
 import java.util.Set;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.autotest.data.mode.ApiSwagger;
 import com.autotest.data.service.impl.PublicVariableServiceImpl;
 import com.autotest.data.utils.JsonUtil;
-import com.techstar.testplat.config.TestPlatProperties;
+import com.techstar.testplat.web.utils.HttpHelper;
 
-import cn.hutool.json.JSONUtil;
+import cn.hutool.http.Header;
+import cn.hutool.http.HttpRequest;
+import lombok.extern.apachecommons.CommonsLog;
 
 import com.alibaba.fastjson.JSONArray;
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.CloseableHttpClient;
-
+@CommonsLog
 @Service
 public class SwaggerProcess {
 	@Autowired
 	private PublicVariableServiceImpl variablempl;
-	@Autowired
-	private TestPlatProperties swaggerProperties;	
 	private List<ApiSwagger> apiSwaggerList= new ArrayList<ApiSwagger>();	
 	private LocalDateTime task_time = LocalDateTime.now();	
 	
@@ -45,8 +37,10 @@ public class SwaggerProcess {
 		return this.apiSwaggerList;
 	}
 	
-	public void setApiSwaggerList() {
-		JSONObject swaggerInfo = getHttpResponse();
+	public void setApiSwaggerList(Integer pid,String url) {
+		this.apiSwaggerList.clear();	
+		JSONObject swaggerInfo = getHttpResponse(url);
+		if(swaggerInfo.isEmpty())return;
 		swaggerInfo=inintResponse(swaggerInfo);
 		String service_name = swaggerInfo.getJSONObject("info").getString("title");
 		JSONArray tags = swaggerInfo.getJSONArray("tags");
@@ -56,9 +50,7 @@ public class SwaggerProcess {
 			ApiSwagger apiSwagger = new ApiSwagger();
 			apiSwagger.setApiUri(basePath+key);
 			apiSwagger.setServiceName(service_name);
-			if(key.equals("/attr/save")) {
-				boolean gg=false;
-			}
+			apiSwagger.setProjectId(pid);
 			for (String method: paths.getJSONObject(key).keySet()) {
 				apiSwagger.setApiMethod(method.toUpperCase());
 				JSONObject info = paths.getJSONObject(key).getJSONObject(method);
@@ -241,35 +233,16 @@ public class SwaggerProcess {
 		return tags.getString(0);
 	}
 	
-	private JSONObject getHttpResponse() {
+	private JSONObject getHttpResponse(String swaggerUrl) {
 		JSONObject swaggerInfo = new JSONObject();
 		try {
-			CloseableHttpClient client = null;
-			CloseableHttpResponse response = null;
-            try {
-                HttpGet httpGet = new HttpGet(swaggerProperties.getSwaggerUrl());
-
-                client = HttpClients.createDefault();
-                response = client.execute(httpGet);
-                HttpEntity entity = response.getEntity();
-                String result = EntityUtils.toString(entity);
-                System.out.println(result);
-                swaggerInfo =JSONObject.parseObject(result);// JSON.parseObject(result)
-                
-//                swaggerInfo =  JSONUtil.parseObj(result);
-//                cn.hutool.json.JSONObject obj = JSONUtil.parseObj(result);
-//                System.out.println(obj.toString());
-                
-            } finally {
-                if (response != null) {
-                    response.close();
-                }
-                if (client != null) {
-                    client.close();
-                }
-            }
+        	String result=new HttpHelper().get(swaggerUrl);
+            System.out.println(result);
+            swaggerInfo =JSONObject.parseObject(result);
         } catch (Exception e) {
-            e.printStackTrace();
+        	log.error("swagger url连接地址异常！");
+//            e.printStackTrace();
+            
         }
 		return swaggerInfo;
 	}

@@ -6,13 +6,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import com.techstar.testplat.common.AuthInterceptor;
 
 @Configuration
 public class CORSConfiguration implements WebMvcConfigurer {
 //	@Resource
 //    AuthInterceptor authInterceptor;
-	
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -34,8 +35,9 @@ public class CORSConfiguration implements WebMvcConfigurer {
 //    	registration.excludePathPatterns("/error");
 //    	registration.excludePathPatterns("/csrf");
 //    }
-    @Bean
-    public AuthInterceptor authInterceptor() {
-    	return new AuthInterceptor();
-    }
+//    @Bean
+//    public AuthInterceptor authInterceptor() {
+//    	return new AuthInterceptor();
+//    } 
+    
 }

@@ -10,6 +10,6 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "testplat")
 public class TestPlatProperties {
 	private String loginHost;
-	private String swaggerUrl;
+//	private String swaggerUrl;
 	private String jmeterAgentUrl;
 }

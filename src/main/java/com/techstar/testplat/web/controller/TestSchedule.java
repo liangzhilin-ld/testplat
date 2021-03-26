@@ -1,4 +1,4 @@
-package com.techstar.testplat.controller;
+package com.techstar.testplat.web.controller;
 
 import io.swagger.annotations.*;
 import lombok.extern.apachecommons.CommonsLog;
@@ -9,16 +9,19 @@ import javax.annotation.Resource;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.autotest.data.mode.ApiReport;
-import com.autotest.data.mode.ScenarioReport;
 import com.autotest.data.mode.TestScheduled;
 import com.autotest.data.service.impl.TestScheduledServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.techstar.testplat.common.CodeMsg;
+import com.techstar.testplat.common.PageBaseInfo;
 import com.techstar.testplat.common.Result;
 import com.techstar.testplat.config.TestPlatProperties;
 import com.techstar.testplat.service.TestTaskService;
@@ -49,6 +52,7 @@ public class TestSchedule{
         	dataOp.AddScheduled(plan);   
         	if(plan.getIsStartNow()) {
         		defaultSchedulingConfigurer.saveApiReportHistoryList(plan);
+        		defaultSchedulingConfigurer.addReport(plan,plan.getHistoryId());
         		String ressult=defaultSchedulingConfigurer.startTest(plan);
             	return res.setSuccess(ressult);
         	}
@@ -115,14 +119,22 @@ public class TestSchedule{
 		}    	
     	return res;
     }
-    @ApiOperation(value = "计划列表查询")
+    @SuppressWarnings("unchecked")
+	@ApiOperation(value = "计划列表查询")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
-    @PostMapping("loadTestPlanAll")
-    public Result<List<TestScheduled>> loadTestPlanAll() {
+    @GetMapping("loadTestPlanAll")
+    public Result<List<TestScheduled>> loadTestPlanAll(
+    		@RequestParam(value = "page", required = false,defaultValue="1") long page,
+    		@RequestParam(value = "size", required = false,defaultValue="20") long size,
+    		@RequestParam(value = "name", required = false) String name) {
     	Result<List<TestScheduled>> res=new Result<>();
+    	QueryWrapper<TestScheduled> wrapper = new QueryWrapper<>();
         try {
-        	res=Result.setSuccess(testSchedule.list());
-        	    	
+        	if(name!=null) {
+        		wrapper.lambda().like(TestScheduled::getJobName, name);
+        	}
+        	PageBaseInfo pb=dataOp.getTestSchedule(page,size,wrapper);
+        	res=Result.setSuccess(pb);
 		} catch (Exception e) {
 			log.info(e.getMessage(), e);
             CodeMsg codeMsg = CodeMsg.PARAMS_INVALID_DETAIL;

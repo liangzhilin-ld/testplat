@@ -1,23 +1,23 @@
 package com.techstar.testplat.swagger;
 
+import com.autotest.data.enums.TreeType;
 import com.autotest.data.mode.ApiSwagger;
+import com.autotest.data.mode.ProjectManage;
+import com.autotest.data.mode.TestSuites;
 import com.autotest.data.service.impl.ApiSwaggerServiceImpl;
+import com.autotest.data.service.impl.ProjectManageServiceImpl;
+import com.autotest.data.service.impl.TestSuitesServiceImpl;
 import com.autotest.data.utils.JsonDiff;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.techstar.testplat.common.PageBaseInfo;
-
-import net.sf.json.JSONObject;
-
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 
@@ -31,38 +31,99 @@ import org.springframework.context.annotation.Primary;
  */
 @Service
 @Primary
-@Transactional
+//@Transactional
 public class ApiSwaggerService{
 	private @Autowired SwaggerProcess swaggerProcess;
 	private @Autowired ApiSwaggerServiceImpl swaggerService;
+	private @Autowired ProjectManageServiceImpl pmServer;
+	private @Autowired TestSuitesServiceImpl module;
 	
-	public Boolean insertData() {
+	/**
+	 * 自动触发项目中配置的swagger url地址接口信息同步
+	 * @return
+	 */
+	public Boolean pullSwaggerData() {
+		Boolean flag=false;
+		List<ProjectManage> list=pmServer.list()
+				.stream().filter(item->item.getSwaggerUrl().size()>0)
+				.collect(Collectors.toList());
+	    if(list.size()==0)return false;
+	    for (ProjectManage pm : list) {
+	    	Integer pid=pm.getProjectId();
+			for (String str : pm.getSwaggerUrl()) {
+				flag=updateSwaggerAPI(pid,str);
+			}
+		}
+	    this.updateModule();
+	    return flag;
+	}
+	/**
+	 * 手动触发
+	 * @param pid 项目ID
+	 * @param url swagger地址信息
+	 * @return
+	 */
+	public Boolean pullSwaggerByHander(Integer pid,String url) {
+		Boolean flag=false;
+		flag=updateSwaggerAPI(pid,url);
+	    this.updateModule();
+	    return flag;
+	}
+	
+	/**
+	 * 更新swagger表数据
+	 * @param pid
+	 * @param url
+	 * @return
+	 */
+	public Boolean updateSwaggerAPI(Integer pid,String url) {
 		Boolean isSuccess=false;
-		swaggerProcess.setApiSwaggerList();
+		swaggerProcess.setApiSwaggerList(pid,url);
 		List<ApiSwagger> apiSwaggerList = swaggerProcess.getApiSwaggerList();
-//		swaggerService.remove(queryWrapper);
+		if(apiSwaggerList.size()==0)return isSuccess;
 		for (int i=0;i<apiSwaggerList.size();i++) {
 			ApiSwagger actual=apiSwaggerList.get(i);
 			QueryWrapper<ApiSwagger> queryWrapper = new QueryWrapper<>();
 			queryWrapper.lambda().eq(ApiSwagger::getApiUri, actual.getApiUri());
 			ApiSwagger db=swaggerService.getOne(queryWrapper);
 			if(db==null) {
-				actual.setId(swaggerService.getBaseMapper().selectMaxId()+1);
-				swaggerService.save(apiSwaggerList.get(i));
+				int maxId=0;
+				try {
+					maxId=swaggerService.getBaseMapper().selectMaxId()+1;
+				} catch (Exception e) {
+					maxId=1;
+				}
+				actual.setId(maxId);
+				actual.setModuleNameOld(actual.getModuleName());
+				swaggerService.save(actual);
 			}else {
-				Boolean change=actual.getApiParameters().equals(db.getApiParameters())
-						&&actual.getApiMethod().equals(db.getApiMethod())
-						&&actual.getApiIn().equals(db.getApiIn())
-						&&actual.getApiReponses().equals(db.getApiReponses());
-				if(!change) {
-					JsonDiff.compareJson(JSONObject.fromObject(actual.getApiParameters()), JSONObject.fromObject(db.getApiParameters()),null);
+				Boolean moduleNameModify=actual.getModuleName().equals(db.getModuleNameOld());
+				Boolean paramModify=actual.getApiParameters().equals(db.getApiParameters());
+				Boolean methodModify=actual.getApiMethod().equals(db.getApiMethod());
+				Boolean apiInModify=actual.getApiIn().equals(db.getApiIn());
+				Boolean responseModify=actual.getApiReponses().equals(db.getApiReponses());
+				if(moduleNameModify||paramModify||methodModify||apiInModify||responseModify) {
+					//JsonDiff.compareJson(JSONObject.fromObject(actual.getApiParameters()), JSONObject.fromObject(db.getApiParameters()),null);
 					UpdateWrapper<ApiSwagger> updateWrapper = new UpdateWrapper<>();
-					updateWrapper.lambda().set(ApiSwagger::getApiParameters, actual.getApiParameters())
-						.set(ApiSwagger::getApiReponses, actual.getApiReponses())
-						.set(ApiSwagger::getApiMethod, actual.getApiMethod())
-						.set(ApiSwagger::getApiIn, actual.getApiIn())
-						.eq(ApiSwagger::getApiUri, actual.getApiUri());
-					swaggerService.update(actual,updateWrapper);
+					if(!moduleNameModify) {
+						updateWrapper.lambda().set(ApiSwagger::getModuleName, actual.getModuleName());
+					}
+					if(!paramModify) {
+						updateWrapper.lambda().set(ApiSwagger::getApiParameters, actual.getApiParameters());
+					}
+					if(!methodModify) {
+						updateWrapper.lambda().set(ApiSwagger::getApiMethod, actual.getApiMethod());
+					}
+					if(!apiInModify) {
+						updateWrapper.lambda().set(ApiSwagger::getApiIn, actual.getApiIn());
+					}
+					if(!responseModify) {
+						updateWrapper.lambda().set(ApiSwagger::getApiReponses, actual.getApiReponses());
+					}
+					updateWrapper.lambda().set(ApiSwagger::getApiDesc, actual.getApiDesc())
+										  .set(ApiSwagger::getUpdateTime, LocalDateTime.now())
+								          .eq(ApiSwagger::getApiUri, actual.getApiUri());
+					swaggerService.update(updateWrapper);
 				}
 				
 			}
@@ -71,10 +132,94 @@ public class ApiSwaggerService{
 	}
 	
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public PageBaseInfo selestAll(long current, long pageSize) {
+	/**
+	 * 分页而查询
+	 * @param current
+	 * @param pageSize
+	 * @param queryWrapper
+	 * @return
+	 */
+	public PageBaseInfo selestAll(long current, long pageSize,LambdaQueryWrapper<ApiSwagger> queryWrapper) {
 		IPage<ApiSwagger> page = new Page<>(current, pageSize);
-		page=swaggerService.page(page);
+		page=swaggerService.page(page,queryWrapper);
 		return new PageBaseInfo(page.getRecords(),current,page.getTotal(),pageSize);
 	}
+	
+	/**
+	 * 获取swagger表中存在的所有模块名，包括变更的
+	 * @return
+	 */
+	public List<ApiSwagger> findByGroup() {
+		QueryWrapper<ApiSwagger> queryWrapper=new QueryWrapper<>();
+		queryWrapper.lambda().select(ApiSwagger::getProjectId,ApiSwagger::getServiceName,ApiSwagger::getModuleName,ApiSwagger::getModuleNameOld)
+			.groupBy(ApiSwagger::getModuleName)
+			.groupBy(ApiSwagger::getModuleNameOld);
+		List<ApiSwagger> list=swaggerService.list(queryWrapper);
+		return list;
+	}
+	
+
+	/**
+	 * swagger模块名如更新，同步树机构当中的模块名称。
+	 */
+	public void updateModule(){
+		List<ApiSwagger> swaggerDb=findByGroup();
+		List<TestSuites> tsList=module.list();
+		for (int i = 0; i < swaggerDb.size(); i++) {
+			String serverName=swaggerDb.get(i).getServiceName();
+			String moduleName=swaggerDb.get(i).getModuleName();
+			String oldName=swaggerDb.get(i).getModuleNameOld();
+			TestSuites isexist=Find(tsList,serverName,swaggerDb.get(i).getProjectId());
+    		TestSuites entity =new TestSuites();
+			entity.setType(TreeType.API.name());
+			if(isexist==null) {
+				//添加服务名称作为父节点
+				entity.setProjectId(swaggerDb.get(i).getProjectId());
+				entity.setName(serverName);
+				module.save(entity);
+				tsList=module.list();
+				
+			}
+			TestSuites oldExist=Find(tsList,oldName,swaggerDb.get(i).getProjectId());
+			if(oldExist==null) {
+				//添加子节点
+				Integer p_id=isexist!=null?isexist.getId():entity.getId();
+				entity.setProjectId(swaggerDb.get(i).getProjectId());
+				entity.setParentId(p_id);
+				entity.setName(moduleName);
+				module.save(entity);
+				tsList=module.list();
+			}else {
+				//子节点变更，更新子节点当中的名称
+				if(oldExist.getName().equals(moduleName))continue;
+				UpdateWrapper<TestSuites> queryWrapper=new UpdateWrapper<>();
+				queryWrapper.lambda().set(TestSuites::getName, moduleName)
+				.eq(TestSuites::getProjectId, oldExist.getProjectId())
+				.eq(TestSuites::getName, oldExist.getName())
+				.eq(TestSuites::getType, TreeType.API.name())
+				.eq(TestSuites::getParentId,oldExist.getParentId());
+				module.update(queryWrapper);
+				tsList=module.list();
+			}
+		}		
+	}
+	
+    /**
+     * 查找模块名在树结构表中是否存在
+     * @param list
+     * @param str
+     * @param pid
+     * @return
+     */
+    private TestSuites Find(List<TestSuites> list,String str,Integer pid) {
+    	TestSuites ts=null;
+    	for (int i = 0; i < list.size(); i++) {
+    		if(list.get(i).getName().equals(str)
+    				&&list.get(i).getProjectId().equals(pid)) {
+        		ts=list.get(i);
+        		break;
+        	}
+		}
+    	return ts;
+    }
 }
