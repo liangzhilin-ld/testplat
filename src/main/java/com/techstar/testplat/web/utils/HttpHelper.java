@@ -42,7 +42,7 @@ public class HttpHelper {
     	return result;
 	}
 	public  String post(String url,String body) {
-		String result=HttpRequest.get(url)
+		String result=HttpRequest.post(url)
 				.addHeaders(myHeader)
         	    .timeout(this.timeout)//超时，毫秒
         	    .body(JSONUtil.parse(body))

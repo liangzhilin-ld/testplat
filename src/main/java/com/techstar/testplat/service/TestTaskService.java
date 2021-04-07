@@ -245,22 +245,30 @@ public class TestTaskService implements SchedulingConfigurer{
 				detail.setJobId(trig.getId());
 				detail.setHistoryId(historyId);
 				apiReport.save(detail);
+				detail.setId(null);
 			}
 		}
     }
     
     public String startTest(TestScheduled trig) {
-    	String result=HttpRequest.post(myProperties.getJmeterAgentUrl()+"/startTest")
-        		.header(Header.ACCEPT, "application/json, text/plain, */*")
-        		.header(Header.ACCEPT_ENCODING, "gzip, deflate")
-        		.header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7")
-        		.header(Header.CONNECTION, "keep-alive")
-        		.header(Header.CONTENT_TYPE, "application/json")
-        		.header(Header.USER_AGENT, "Hutool http")
-        	    .timeout(10000)//超时，毫秒
-        	    .body(JSONUtil.parse(trig))
-        	    .execute().body();
-    	return result;
+    	try {
+        	String result=HttpRequest.post(myProperties.getJmeterAgentUrl()+"/startTest")
+            		.header(Header.ACCEPT, "application/json, text/plain, */*")
+            		.header(Header.ACCEPT_ENCODING, "gzip, deflate")
+            		.header(Header.ACCEPT_LANGUAGE, "zh-CN,zh;q=0.9,en;q=0.8,fr;q=0.7")
+            		.header(Header.CONNECTION, "keep-alive")
+            		.header(Header.CONTENT_TYPE, "application/json")
+            		.header(Header.USER_AGENT, "Hutool http")
+            	    .timeout(10000)//超时，毫秒
+            	    .body(JSONUtil.parse(trig))
+            	    .execute().body();
+        	return result;
+		} catch (Exception e) {
+			log.error("startTest(TestScheduled trig)方法调用http接口失败!");
+			return e.getMessage();
+		}
+
+    	
     }
     	
 }

@@ -1,9 +1,11 @@
 package com.techstar.testplat.swagger;
 
+import com.alibaba.fastjson.JSONArray;
 import com.autotest.data.enums.TreeType;
 import com.autotest.data.mode.ApiSwagger;
 import com.autotest.data.mode.ProjectManage;
 import com.autotest.data.mode.TestSuites;
+import com.autotest.data.mode.custom.SwaggerInfo;
 import com.autotest.data.service.impl.ApiSwaggerServiceImpl;
 import com.autotest.data.service.impl.ProjectManageServiceImpl;
 import com.autotest.data.service.impl.TestSuitesServiceImpl;
@@ -14,8 +16,18 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.techstar.testplat.common.PageBaseInfo;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import lombok.extern.apachecommons.CommonsLog;
+
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +41,7 @@ import org.springframework.context.annotation.Primary;
  * @author zhengyl
  * @since 2020-09-04
  */
+@CommonsLog
 @Service
 @Primary
 //@Transactional
@@ -50,8 +63,13 @@ public class ApiSwaggerService{
 	    if(list.size()==0)return false;
 	    for (ProjectManage pm : list) {
 	    	Integer pid=pm.getProjectId();
-			for (String str : pm.getSwaggerUrl()) {
-				flag=updateSwaggerAPI(pid,str);
+	    	if(pm.getSwaggerUrl().size()==0)continue;
+	    	List<SwaggerInfo> listUrl=pm.getSwaggerUrl();
+	    	if(!(pm.getSwaggerUrl().get(0) instanceof SwaggerInfo)) {
+	    		listUrl=(List<SwaggerInfo>)JSONArray.parseArray(listUrl.toString(),SwaggerInfo.class);
+	    	}
+			for (SwaggerInfo swg :listUrl ) {
+				flag=updateSwaggerAPI(pid,swg);
 			}
 		}
 	    this.updateModule();
@@ -63,24 +81,28 @@ public class ApiSwaggerService{
 	 * @param url swagger地址信息
 	 * @return
 	 */
-	public Boolean pullSwaggerByHander(Integer pid,String url) {
+	public Boolean pullSwaggerByHander(Integer pid,SwaggerInfo swg) {
 		Boolean flag=false;
-		flag=updateSwaggerAPI(pid,url);
+		flag=updateSwaggerAPI(pid,swg);
 	    this.updateModule();
 	    return flag;
 	}
 	
 	/**
-	 * 更新swagger表数据
+	 * 更新swagger表数据 String url
 	 * @param pid
 	 * @param url
 	 * @return
 	 */
-	public Boolean updateSwaggerAPI(Integer pid,String url) {
-		Boolean isSuccess=false;
-		swaggerProcess.setApiSwaggerList(pid,url);
+	public Boolean updateSwaggerAPI(Integer pid,SwaggerInfo swg) {
+		Boolean isSuccess=true;
+		swaggerProcess.setApiSwaggerList(pid,swg.getUrl());
 		List<ApiSwagger> apiSwaggerList = swaggerProcess.getApiSwaggerList();
-		if(apiSwaggerList.size()==0)return isSuccess;
+		if(apiSwaggerList.size()==0) {
+			return isSuccess;
+		}else {
+			apiSwaggerList.forEach(item->item.setApiUri(swg.getPrefix()+item.getApiUri()));
+		}
 		for (int i=0;i<apiSwaggerList.size();i++) {
 			ApiSwagger actual=apiSwaggerList.get(i);
 			QueryWrapper<ApiSwagger> queryWrapper = new QueryWrapper<>();
@@ -145,6 +167,44 @@ public class ApiSwaggerService{
 		return new PageBaseInfo(page.getRecords(),current,page.getTotal(),pageSize);
 	}
 	
+	
+	public ApiSwagger selestById(String id) {
+		QueryWrapper<ApiSwagger> queryWrapper=new QueryWrapper<>();
+		queryWrapper.lambda().eq(ApiSwagger::getId, id);
+		ApiSwagger api=swaggerService.getOne(queryWrapper);
+		Pattern p = Pattern.compile("\\{([^}]*)\\}");//判断是否是url地址中传参
+		Matcher matcher = p.matcher(api.getApiUri());
+		if(api.getApiIn().equals("path")||api.getApiIn().equals("query")) {
+			try {
+				String buildstr="";
+				JSONObject json=JSONUtil.parseObj(api.getApiParameters());
+				for (Entry<String, Object> em : json.entrySet()) {
+					String subUri=em.getKey()+"="+em.getValue().toString();
+					if(buildstr.isEmpty()) {
+						buildstr="?"+subUri;
+						continue;
+					}
+					buildstr=buildstr+"&"+subUri;
+				}
+				if(!matcher.find())
+					api.setApiUri(api.getApiUri()+buildstr);
+				api.setApiParameters("");
+			} catch (Exception e) {
+				log.error("swagger参数解析异常！swagger id:"+api.getId());
+			}
+			
+		}			
+		return api;
+	}
+
+	public List<ApiSwagger> getModuleByProject(Integer projectId) {
+		QueryWrapper<ApiSwagger> queryWrapper=new QueryWrapper<>();
+		queryWrapper.lambda().select(ApiSwagger::getServiceName,ApiSwagger::getModuleName,ApiSwagger::getModuleNameOld)
+		    .eq(ApiSwagger::getProjectId, projectId)
+			.groupBy(ApiSwagger::getModuleName);
+		List<ApiSwagger> list=swaggerService.list(queryWrapper);
+		return list;
+	}
 	/**
 	 * 获取swagger表中存在的所有模块名，包括变更的
 	 * @return
@@ -157,8 +217,6 @@ public class ApiSwaggerService{
 		List<ApiSwagger> list=swaggerService.list(queryWrapper);
 		return list;
 	}
-	
-
 	/**
 	 * swagger模块名如更新，同步树机构当中的模块名称。
 	 */

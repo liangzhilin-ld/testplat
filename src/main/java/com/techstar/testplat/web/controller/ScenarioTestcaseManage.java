@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "场景管理")
+@Api(tags = "场景用例管理")
 @Validated
 @RestController
 @RequestMapping("Scenario")
@@ -82,22 +82,31 @@ public class ScenarioTestcaseManage {
     public Result<ScenarioTestcase> query(
     		@RequestParam(value = "page", required = false,defaultValue="1") long page,
     		@RequestParam(value = "size", required = false,defaultValue="20") long size,
+			@RequestParam(value = "projectId", required = false) Integer projectId,
+			@RequestParam(value = "moduleId", required = false) Integer moduleId,
     		@RequestParam(value = "name", required = false) String name,
     		@RequestParam(value = "type", required = false) String type,
     		@RequestParam(value = "prio", required = false) String prio,
     		@RequestParam(value = "director", required = false) String director) {
     	QueryWrapper<ScenarioTestcase> wrapper = new QueryWrapper<>();
+    	if(projectId!=null) {
+    		wrapper.lambda().eq(ScenarioTestcase::getProjectId, projectId);
+    	}
+    	if(moduleId!=null) {
+    		wrapper.lambda().eq(ScenarioTestcase::getSuiteId, moduleId);
+    	}
+    	
     	if(name!=null) {
     		wrapper.lambda().like(ScenarioTestcase::getScenarioName, name);
     	}
     	if(type!=null) {
-    		wrapper.lambda().like(ScenarioTestcase::getType, type);
+    		wrapper.lambda().eq(ScenarioTestcase::getType, type);
     	}
     	if(prio!=null) {
-    		wrapper.lambda().like(ScenarioTestcase::getPriority, prio);
+    		wrapper.lambda().eq(ScenarioTestcase::getPriority, prio);
     	}
     	if(director!=null) {
-    		wrapper.lambda().like(ScenarioTestcase::getScenarioName, director);
+    		wrapper.lambda().eq(ScenarioTestcase::getScenarioName, director);
     	}
     	IPage<ScenarioTestcase> ipage = new Page<>(page, size);
     	ipage=scenariServer.page(ipage, wrapper);

@@ -192,7 +192,7 @@ public class SwaggerProcess {
 		String contentType="query";
 		JSONArray paras=json.getJSONArray("parameters");
 		if(paras.size()>1) {
-			JSONObject jsonss=JSONObject.parseObject(paras.getString(1));			
+			JSONObject jsonss=JSONObject.parseObject(paras.getString(paras.size()-1));			
 			contentType=jsonss.getString("in");
 		}		
 		return contentType;

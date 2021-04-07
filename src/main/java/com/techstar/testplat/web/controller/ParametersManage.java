@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-@Api(tags = "公用参数管理")
+@Api(tags = "测试用例使用公用参数")
 @Validated
 @RestController
 @RequestMapping("ParametersManage")

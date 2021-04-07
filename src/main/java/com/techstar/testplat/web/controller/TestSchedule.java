@@ -39,7 +39,6 @@ import com.techstar.testplat.service.TestDataServiceImpl;
 public class TestSchedule{
 	private @Autowired TestDataServiceImpl dataOp;
 	private @Autowired TestTaskService defaultSchedulingConfigurer;
-	private @Autowired TestScheduledServiceImpl testSchedule;
 	
 	
     @ApiOperation(value = "计划任务添加")

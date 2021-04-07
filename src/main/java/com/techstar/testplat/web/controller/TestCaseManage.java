@@ -34,7 +34,7 @@ import com.techstar.testplat.web.utils.HttpHelper;
 
 import cn.hutool.json.JSONUtil;
 
-@Api(tags = "用例管理")
+@Api(tags = "API用例管理")
 @Validated
 @CommonsLog
 @RestController
@@ -113,9 +113,21 @@ public class TestCaseManage{
     @GetMapping("query")
     public Result<List<HttpTestcase>> query(@RequestParam(required = false,defaultValue="1") Integer page,
 								@RequestParam(required = false,defaultValue="20") Integer size,
+								@RequestParam(required = false) Integer projectId,
+								@RequestParam(required = false) Integer moduleId,
+					    		@RequestParam(required = false) String prio,
 								@RequestParam(required = false) String name) {
  
     	QueryWrapper<HttpTestcase> wrapper = new QueryWrapper<>();
+    	if(projectId!=null) {
+    		wrapper.lambda().eq(HttpTestcase::getProjectId, projectId);
+    	}
+    	if(moduleId!=null) {
+    		wrapper.lambda().eq(HttpTestcase::getSuiteId, moduleId);
+    	}
+      	if(prio!=null) {
+    		wrapper.lambda().eq(HttpTestcase::getPriority, prio);
+    	}
     	if(name!=null) {
     		wrapper.lambda().like(HttpTestcase::getApiName, name);
     	}

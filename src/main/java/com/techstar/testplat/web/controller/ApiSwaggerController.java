@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.autotest.data.mode.ApiSwagger;
 import com.autotest.data.mode.ProjectManage;
 import com.autotest.data.mode.PublicVariable;
+import com.autotest.data.mode.custom.SwaggerInfo;
 import com.autotest.data.service.IApiSwaggerService;
 import com.autotest.data.service.impl.PublicVariableServiceImpl;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -54,9 +55,9 @@ public class ApiSwaggerController {
 	@Autowired
 	private PublicVariableServiceImpl publicVariableService;
 	
-	@ApiOperation(value = "同步swagger数据")
-	@RequestMapping(value = "/pullSwaggerData", method = RequestMethod.POST)
-	public Result<Object> pullSwaggerData() {
+	@ApiOperation(value = "同步项目所有swagger url数据")
+	@RequestMapping(value = "/pullAllSwagger", method = RequestMethod.POST)
+	public Result<Object> pullAllSwagger() {
 		//@RequestHeader("Authorization") String token
 		Result<Object> res=new Result<>();
 		Boolean isSucc=apiSwaggerService.pullSwaggerData();
@@ -66,10 +67,23 @@ public class ApiSwaggerController {
 		}
         return  res;
 	}
+	
+	@ApiOperation(value = "同步单个url")
+	@RequestMapping(value = "/pullSingleSwagger", method = RequestMethod.POST)
+	public Result<Object> pullSingleSwagger(Integer pid,@RequestBody SwaggerInfo swg) {
+		//@RequestHeader("Authorization") String token
+		Result<Object> res=new Result<>();
+		Boolean isSucc=apiSwaggerService.pullSwaggerByHander(pid, swg);
+		if(!isSucc) {
+			CodeMsg codeMsg = CodeMsg.SERVER_ERROR;
+	        res=res.fail(codeMsg);
+		}
+        return  res;
+	}
 	//@RequestParam(required =false) String name
-	@ApiOperation(value = "查询数据")
-	@RequestMapping(value = "/query", method = RequestMethod.GET)
-	public Result<List<ApiSwagger>> query(@RequestParam(required = false,defaultValue="1") Integer page,
+	@ApiOperation(value = "列表查询")
+	@RequestMapping(value = "/list", method = RequestMethod.GET)
+	public Result<List<ApiSwagger>> list(@RequestParam(required = false,defaultValue="1") Integer page,
 											@RequestParam(required = false,defaultValue="20") Integer size,
 											@RequestParam(required = false) String moduleName,
 											@RequestParam(required = false) String id,
@@ -90,6 +104,21 @@ public class ApiSwaggerController {
         return res;
 	}
 	
+	/**
+	 * 创建测试用例调用，将返回数据直接填充至页面对控件
+	 * @param id
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@ApiOperation(value = "根据id查询")
+	@RequestMapping(value = "/queryById", method = RequestMethod.GET)
+	public Result<ApiSwagger> queryById(String id) {
+		Result<ApiSwagger> res=new Result<>();
+		ApiSwagger api=apiSwaggerService.selestById(id);
+		res=Result.setSuccess(api);
+        return res;
+	}
+	
 	@ApiOperation(value = "debug")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @PostMapping("selectData")
@@ -105,14 +134,12 @@ public class ApiSwaggerController {
 		}
 		Result<List<PublicVariable>> res=Result.setSuccess(list);
         return res;
-	}
-	
-	
+	}		
 	@ApiOperation(value = "获取分组模块")
     @ApiResponses({@ApiResponse(code = 200, message = "ResultMsg"),})
     @GetMapping("findByGroup")
-	public Result<Object> findByGroup() {
-		Result<Object> res=Result.setSuccess(apiSwaggerService.findByGroup());
+	public Result<Object> findByGroup(Integer projectId) {
+		Result<Object> res=Result.setSuccess(apiSwaggerService.getModuleByProject(projectId));
         return res;
 	}
 }

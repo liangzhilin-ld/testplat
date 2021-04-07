@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.apachecommons.CommonsLog;
 
-@Api(tags = "目录管理")
+@Api(tags = "用例分组模块")
 @Validated
 @CommonsLog
 @RestController
