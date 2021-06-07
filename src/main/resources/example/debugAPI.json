@@ -1,0 +1,82 @@
+{
+    "caseId": 1,
+    "projectId": 1,
+    "suiteId": 1,
+    "suiteName": "首页加载",
+    "apiProtocol": "http",
+    "apiName": "员工列表",
+    "apiUri": "/platform/org/findTreeData",
+    "apiMethod": "POST",
+    "apiIn": "body",
+    "parameters": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+    "headers": [
+        {
+            "name": "Connection",
+            "value": "keep-alive"
+        }
+    ],
+    "arguments": [
+        {
+            "name": "userName",
+            "value": "xtgly",
+            "desc": ""
+        }
+    ],
+    "hashtree": [
+        {
+            "dummySampler": [],
+            "beanShellPreProcessor": [],
+            "name": "前置处理器",
+            "preCaseIds": [],
+            "preMockIds": [
+                1
+            ],
+            "type": "PreExtract",
+            "sampleTimeout": 0,
+            "jdbcPreProcessor": [],
+            "jsr223PreProcessor": ""
+        },
+        {
+            "cssSelectorExtractor": "",
+            "jdbcPostProcessor": [],
+            "jsr223PostProcessor": "",
+            "xpath2Extractor": "",
+            "xpathExtractor": "",
+            "name": "后置处理器",
+            "regularExpressionExtractor": "",
+            "jsonExtractor": [],
+            "boundaryExtractor": "",
+            "type": "PostExtract",
+            "beanShellPostProcessor": []
+        },
+        {
+            "schema": "",
+            "jsr223Assertion": "",
+            "beanShellAssertion": [],
+            "name": "校验",
+            "jsonAssertion": [],
+            "type": "Assertions",
+            "responseAssertion": [
+                {
+                    "applyTo": "MAIN",
+                    "patternRules": "substring",
+                    "fieldToText": "TEXT RESPONSE",
+                    "variableValue": "",
+                    "name": "响应断言",
+                    "testString": [
+                        "机构树"
+                    ],
+                    "customFailureMsg": "",
+                    "type": "ResponseAssertion"
+                }
+            ],
+            "xpathAssertion": ""
+        }
+    ],
+    "attachment": "",
+    "tag": "",
+    "priority": "高",
+    "createTime": "2021-02-01T17:07:12",
+    "updateTime": "2021-02-01T17:07:12",
+    "type": "HTTPSampler"
+}

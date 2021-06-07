@@ -1,0 +1,23 @@
+{
+    "id": "",
+    "jobName": "测试计划test",
+    "tcCaseids": {
+        "samplerIds": [
+            1
+        ],
+        "scenarioIds": []
+    },
+    "jobStatus": "1",
+    "serVersion": "22",
+    "expression": "",
+    "numOfConcurrent": 1,
+    "retry": 1,
+    "startTime": "",
+    "endTime": "",
+    "notifyType": "1",
+    "createTime": "2020-12-01T08:15:31",
+    "isStartNow": true,
+    "testIp": "172.16.206.127",
+    "testPort": "31100",
+    "historyId": null
+}

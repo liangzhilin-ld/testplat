@@ -1,0 +1,21 @@
+{
+	"apiIn": "body",
+	"apiMethod": "POST",
+	"apiName": "员工列表",
+	"apiPre": "1",
+	"apiProtocol": "string",
+	"apiUri": "/platform/org/findTreeData",
+	"attachment": "string",
+	"caseId": 3,
+	"checkPoint": "string",
+	"configElement": "1",
+	"createTime": "2020-12-02T03:04:40.650Z",
+	"parameters": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+	"preCases": "1",
+	"projectId": 1,
+	"suiteId": 0,
+	"suiteName": "用户模块",
+	"tcPost": "",
+	"tcVar": "",
+	"preProcessor": {}
+}

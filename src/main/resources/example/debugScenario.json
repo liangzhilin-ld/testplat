@@ -1,0 +1,22 @@
+{
+    "id": 2,
+    "projectId": 1,
+    "scenarioName": "数结构查询",
+    "suiteId": 1,
+    "priority": "",
+    "director": "梁志林",
+    "comments": "数结构查询",
+    "hashtree": [
+    {
+        "name": "首页加载",
+        "id": 1,
+        "type": "HTTPSampler"
+    }
+    ],
+    "arguments": [],
+    "status": "未完成",
+    "tag": "",
+    "type": "Scenario",
+    "createTime": "2021-02-02T14:13:48",
+    "updateTime": "2021-02-02T14:13:48"
+}

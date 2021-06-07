@@ -1,0 +1,66 @@
+{
+    "apiIn": "query",
+    "apiMethod": "GET",
+    "apiName": "g接口",
+    "apiProtocol": "http",
+    "apiUri": "/auth/g",
+    "arguments": [],
+    "attachment": "",
+    "caseId": 0,
+    "createTime": "2021-02-02T03:19:20.597Z",
+    "hashtree": [
+        {
+            "beanShellPostProcessor": [],
+            "boundaryExtractor": "",
+            "cssSelectorExtractor": "",
+            "jdbcPostProcessor": [],
+            "jsonExtractor": [
+                {
+                    "applyTo": "MAIN",
+                    "applyToVarToUse": "",
+                    "defaultValue": "empty",
+                    "jsonPath": "$.data",
+                    "matchNo": "1",
+                    "name": "JSON Extractor",
+                    "suffixAll": false,
+                    "type": "JSONExtractor",
+                    "variableName": "gdata"
+                }
+            ],
+            "jsr223PostProcessor": "",
+            "regularExpressionExtractor": "",
+            "xpath2Extractor": "",
+            "xpathExtractor": "",
+            "name": "后置处理器",
+            "type": "PostExtract"
+        },
+        {
+            "beanShellAssertion": [
+                {
+                    "fileName": "",
+                    "name": "BeanShell Assertion",
+                    "prameters": "",
+                    "resetInterpreter": false,
+                    "script": "if(\"${gdata}\"==\"empty\"){\r\n\tAssertionResult.setFailure(true);\r\n    AssertionResult.setFailureMessage(\"g接口异常,响应内容:\"+prev.getResponseDataAsString());\r\n}",
+                    "type": "BeanShellAssertion"
+                }
+            ],
+            "jsonAssertion": [],
+            "jsr223Assertion": "",
+            "responseAssertion": [],
+            "schema": "",
+            "xpathAssertion": "",
+            "name": "校验",
+            "type": "Assertions"
+        }
+    ],
+    "headers": [],
+    "parameters": "",
+    "priority": "高",
+    "projectId": 0,
+    "suiteId": 1,
+    "suiteName": "登陆",
+    "tag": "",
+    "type": "HTTPSampler",
+    "updateTime": "2021-02-02T03:19:20.597Z"
+}

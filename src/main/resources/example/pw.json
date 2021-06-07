@@ -1,0 +1,70 @@
+{
+    "apiIn": "body",
+    "apiMethod": "POST",
+    "apiName": "pw",
+    "apiProtocol": "http",
+    "apiUri": "/auth/login/pw",
+    "arguments": [],
+    "attachment": "",
+    "caseId": 0,
+    "createTime": "2021-02-02T03:19:20.597Z",
+    "hashtree": [
+        {
+            "beanShellPostProcessor": [],
+            "boundaryExtractor": "",
+            "cssSelectorExtractor": "",
+            "jdbcPostProcessor": [],
+            "jsonExtractor": [
+                {
+                    "applyTo": "MAIN",
+                    "applyToVarToUse": "",
+                    "defaultValue": "empty",
+                    "jsonPath": "$.data.access_token",
+                    "matchNo": "1",
+                    "name": "JSON Extractor",
+                    "suffixAll": false,
+                    "type": "JSONExtractor",
+                    "variableName": "author"
+                }
+            ],
+            "jsr223PostProcessor": "",
+            "regularExpressionExtractor": "",
+            "xpath2Extractor": "",
+            "xpathExtractor": "",
+            "name": "后置处理器",
+            "type": "PostExtract"
+        },
+        {
+            "beanShellAssertion": [],
+            "jsonAssertion": [],
+            "jsr223Assertion": "",
+            "responseAssertion": [
+            {
+                    "applyTo": "MAIN",
+                    "customFailureMsg": "",
+                    "fieldToText": "TEXT RESPONSE",
+                    "name": "响应断言",
+                    "patternRules": "SUB String",
+                    "testString": [
+                        "认证成功"
+                    ],
+                    "type": "ResponseAssertion",
+                    "variableValue": ""
+                }
+            ],
+            "schema": "",
+            "xpathAssertion": "",
+            "name": "校验",
+            "type": "Assertions"
+        }
+    ],
+    "headers": [],
+    "parameters": "{\"username\":\"${username}\",\"password\":\"${password}\",\"icode\":\"${icode}\",\"deviceId\":\"${deviceId}\",\"id\":\"${id}\"}",
+    "priority": "高",
+    "projectId": 0,
+    "suiteId": 1,
+    "suiteName": "登陆",
+    "tag": "",
+    "type": "HTTPSampler",
+    "updateTime": "2021-02-02T03:19:20.597Z"
+}

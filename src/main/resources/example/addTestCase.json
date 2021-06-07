@@ -1,0 +1,163 @@
+{
+    "apiIn": "body",
+    "apiMethod": "POST",
+    "apiName": "员工列表",
+    "apiProtocol": "http",
+    "apiUri": "/platform/org/findTreeData",
+    "arguments": [
+        {
+            "desc": "",
+            "name": "userName",
+            "value": "xtgly"
+        }
+    ],
+    "attachment": "",
+    "caseId": 0,
+    "createTime": "2021-01-30T02:40:30.265Z",
+    "hashtree": [
+        {
+            "beanShellPreProcessor": [
+                {
+                    "fileName": "string",
+                    "name": "string",
+                    "prameters": "string",
+                    "resetInterpreter": false,
+                    "script": "string",
+                    "type": "BeanShellPreProcessor"
+                }
+            ],
+            "dummySampler":[ 
+            	{
+                	"id": "string",
+                	"name": "string"
+            	}
+            ],
+            "jdbcPreProcessor": [
+                {
+                    "handleResultset": "string",
+                    "name": "mysql",
+                    "parameterTypes": "",
+                    "parameterValues": "",
+                    "query": "select * from api_mock limit 1",
+                    "queryTimeout": "string",
+                    "queryType": "string",
+                    "resultValueName": "string",
+                    "type": "JDBCPreProcessor",
+                    "variableNamePool": "mysql",
+                    "variableNames": "string"
+                }
+            ],
+            "jsr223PreProcessor": "string",
+            "preCaseIds": [],
+            "preMockIds": [
+                1
+            ],
+            "sampleTimeout": 0,
+            "name": "前置处理器",
+            "type": "PreExtract"
+        },
+        {
+            "beanShellPostProcessor": [
+                {
+                    "fileName": "string",
+                    "name": "string",
+                    "prameters": "string",
+                    "resetInterpreter": false,
+                    "script": "string",
+                    "type": "BeanShellPostProcessor"
+                }
+            ],
+            "boundaryExtractor": "string",
+            "cssSelectorExtractor": "string",
+            "jdbcPostProcessor": [
+                {
+                    "handleResultset": "string",
+                    "name": "mysql",
+                    "parameterTypes": "",
+                    "parameterValues": "",
+                    "query": "select * from api_mock limit 1",
+                    "queryTimeout": "string",
+                    "queryType": "string",
+                    "resultValueName": "string",
+                    "type": "JDBCPostProcessor",
+                    "variableNamePool": "mysql",
+                    "variableNames": "string"
+                }
+            ],
+            "jsonExtractor": [
+                {
+                    "applyTo": "MAIN",
+                    "applyToVarToUse": "",
+                    "defaultValue": "empty",
+                    "jsonPath": "$.data",
+                    "matchNo": "1",
+                    "name": "string",
+                    "suffixAll": false,
+                    "type": "JSONExtractor",
+                    "variableName": "findTreeData"
+                }
+            ],
+            "jsr223PostProcessor": "string",
+            "regularExpressionExtractor": "string",
+            "xpath2Extractor": "string",
+            "xpathExtractor": "string",
+            "name": "后置处理器",
+            "type": "PostExtract"
+        },
+        {
+            "beanShellAssertion": [
+                {
+                    "fileName": "string",
+                    "name": "string",
+                    "prameters": "string",
+                    "resetInterpreter": false,
+                    "script": "string",
+                    "type": "BeanShellAssertion"
+                }
+            ],
+            "jsonAssertion": [
+                {
+                    "addAssertValue": true,
+                    "expectedNull": false,
+                    "expectedValue": "string",
+                    "invertAssert": false,
+                    "jsonPath": "string",
+                    "name": "string",
+                    "type": "JSONAssertion"
+                }
+            ],
+            "jsr223Assertion": "string",
+            "responseAssertion": [
+                {
+                    "applyTo": "string",
+                    "customFailureMsg": "string",
+                    "fieldToText": "string",
+                    "name": "string",
+                    "patternRules": "string",
+                    "testString": [
+                        "string"
+                    ],
+                    "type": "ResponseAssertion",
+                    "variableValue": "string"
+                }
+            ],
+            "schema": "string",
+            "xpathAssertion": "string",
+            "name": "校验",
+            "type": "Assertions"
+        }
+    ],
+    "headers": [
+        {
+            "name": "Connection",
+            "value": "keep-alive"
+        }
+    ],
+    "parameters": "{\"requestPage\":{\"pageNo\":1,\"limit\":50},\"parameters\":[{\"value\":\"value\",\"key\":\"key\"}],\"sorts\":[{\"field\":\"field\",\"order\":\"order\"}]}",
+    "priority": "高",
+    "projectId": 1,
+    "suiteId": 1,
+    "suiteName": "首页加载",
+    "tag": "",
+    "updateTime": ""
+}

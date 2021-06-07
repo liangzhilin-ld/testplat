@@ -1,0 +1,66 @@
+{
+    "apiIn": "query",
+    "apiMethod": "GET",
+    "apiName": "image",
+    "apiProtocol": "http",
+    "apiUri": "/auth/code/image",
+    "arguments": [],
+    "attachment": "",
+    "caseId": 0,
+    "createTime": "2021-02-02T03:19:20.597Z",
+    "hashtree": [
+        {
+            "beanShellPostProcessor": [],
+            "boundaryExtractor": "",
+            "cssSelectorExtractor": "",
+            "jdbcPostProcessor": [],
+            "jsonExtractor": [
+                {
+                    "applyTo": "MAIN",
+                    "applyToVarToUse": "",
+                    "defaultValue": "empty",
+                    "jsonPath": "$.data",
+                    "matchNo": "1",
+                    "name": "JSON Extractor",
+                    "suffixAll": false,
+                    "type": "JSONExtractor",
+                    "variableName": "veryCode"
+                }
+            ],
+            "jsr223PostProcessor": "",
+            "regularExpressionExtractor": "",
+            "xpath2Extractor": "",
+            "xpathExtractor": "",
+            "name": "后置处理器",
+            "type": "PostExtract"
+        },
+        {
+            "beanShellAssertion": [
+                {
+                    "fileName": "",
+                    "name": "BeanShell Assertion",
+                    "prameters": "",
+                    "resetInterpreter": false,
+                    "script": "import com.autotest.util.sm.SMUtils;\r\nimport org.json.*;\r\nif(\"${veryCode}\"==\"empty\"||\"${gdata}\"==\"empty\"){\r\n\tAssertionResult.setFailure(true);\r\n     AssertionResult.setFailureMessage(\"验证码接口异常:\"+prev.getResponseDataAsString());\r\n}\r\nelse{\r\n \t//获取g接口公钥\r\n \tSMUtils sm=new SMUtils();\r\n\tJSONObject data_obj=new JSONObject(sm.sm4_ecb_decrypt(\"${smDecryptKey}\",\"${gdata}\"));\r\n\tString publicKey=data_obj.getString(\"publicKey\");\r\n\t//验证码sm4解析\r\n\tString imagData=sm.sm4_ecb_decrypt(\"${smDecryptKey}\",\"${veryCode}\");\r\n\t//账号sm2加密处理\r\n\tvars.put(\"username\",sm.sm2Encrypt(publicKey,\"${userName}\"));\r\n\tvars.put(\"password\",sm.sm2Encrypt(publicKey,\"${pwd}\"));\r\n\tvars.put(\"icode\",imagData.split(\",\")[1]);\r\n\tvars.put(\"deviceId\",imagData.split(\",\")[0]);\r\n\tvars.put(\"id\",data_obj.getString(\"id\"));\r\n}",
+                    "type": "BeanShellAssertion"
+                }
+            ],
+            "jsonAssertion": [],
+            "jsr223Assertion": "",
+            "responseAssertion": [],
+            "schema": "",
+            "xpathAssertion": "",
+            "name": "校验",
+            "type": "Assertions"
+        }
+    ],
+    "headers": [],
+    "parameters": "",
+    "priority": "高",
+    "projectId": 0,
+    "suiteId": 1,
+    "suiteName": "登陆",
+    "tag": "",
+    "type": "HTTPSampler",
+    "updateTime": "2021-02-02T03:19:20.597Z"
+}

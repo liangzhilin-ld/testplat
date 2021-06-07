@@ -1,0 +1,49 @@
+{
+    "id": 0,
+    "projectId": 1,
+    "comments": "用于其他接口前置登陆操作",
+    "director": "梁志林",
+    "arguments":[],
+    "hashtree": [
+        {
+            "type": "Scenario",
+            "id": 1,
+            "name": "登陆"
+        },
+        {
+            "type": "HTTPSampler",
+            "id": 1,
+            "name": "/auth/g"
+        },
+        {
+            "type": "HTTPSampler",
+            "id": 2,
+            "name": "/auth/code/image"
+        },
+        {
+            "type": "HTTPSampler",
+            "id": 3,
+            "name": "/auth/login/pw"
+        },
+        {
+            "type": "LoginController",
+            "id": 1,
+            "name": "逻辑控制器",
+            "hashtree": [
+                {
+                    "type": "HTTPSampler",
+                    "id": 1,
+                    "name": "/auth/g"
+                }
+            ]
+        }
+    ],
+    "priority": "",
+    "scenarioName": "登陆",
+    "suiteId": 1,
+    "tag": "登陆",
+    "type": "Scenario",
+    "status": "未完成",
+    "createTime": "2021-02-01T09:51:29.381Z",
+    "updateTime": "2021-02-01T09:51:29.381Z"
+}
