@@ -95,6 +95,23 @@ public class ApiSwaggerService{
 	    this.updateModule();
 	    return flag;
 	}
+	public String getSwagVersion(SwaggerInfo swg) {
+		String version="2.x";
+		try {
+			if(swg.getUrl().contains("swagger-resources")) {
+				String jaStr = HttpRequest.get(swg.getUrl()).execute().body();
+				if(JSONUtil.isJson(jaStr)) {
+					cn.hutool.json.JSONArray array=JSONUtil.parseArray(jaStr);
+					String ver=JSONUtil.parseObj(array.get(0)).getStr("swaggerVersion");
+					if(ver.contains("2."))
+						return version;
+				}
+			}
+		} catch (Exception e) {
+		}
+		version="3.x";
+		return version; 
+	}
 	/**
 	 * 手动触发
 	 * @param pid 项目ID
@@ -121,13 +138,14 @@ public class ApiSwaggerService{
 		if(apiSwaggerList.size()==0) {
 			return isSuccess;
 		}
-//		apiSwaggerList.forEach(item->item.setApiUri(swg.getPrefix()+item.getApiUri()));
 		for (int i=0;i<apiSwaggerList.size();i++) {
 			ApiSwagger actual=new ApiSwagger();
 			actual=apiSwaggerList.get(i);
-			if(actual.getApiUri().contains("/authInfo/xx")) {
-				Boolean flad=false;
-			}
+			String prex=actual.getApiUri().split("/")[1];
+			if(swg.getServiceName().length()==0)
+				swg.setServiceName(prex);
+			if(swg.getPrefix().length()==0)
+				swg.setPrefix(prex);
 			actual.setApiUri(swg.getPrefix()+actual.getApiUri());
 			actual.setServiceName(swg.getServiceName());
 			QueryWrapper<ApiSwagger> queryWrapper = new QueryWrapper<>();

@@ -61,6 +61,9 @@ public class Swagger2 {
 				apiSwagger.setModuleName(getModuleName(info));
 				apiSwagger.setModuleDesc(getModuleDesc(tags, info));
 				try {
+					if(apiSwagger.getModuleName().equals("数据源管理")&&key.equals("/save")) {
+						Boolean fals=false;
+					}
 					apiSwagger.setApiParameters(getApiParameters(info,swaggerInfo).toString());
 					apiSwagger.setApiReponses(getApiResponse(info,swaggerInfo).toString());
 				} catch (Exception e) {
@@ -161,10 +164,11 @@ public class Swagger2 {
 	private JSONObject getApiParameters(JSONObject method,JSONObject root) {
 		JSONArray paras=method.getJSONArray("parameters");
 		JSONObject jsonb=new JSONObject();
-		if(paras!=null&&paras.size()>1) {
-			for (int i = 1; i < paras.size(); i++) {				
+		if(paras!=null&&paras.size()>=1) {
+			for (int i = 0; i < paras.size(); i++) {				
 				JSONObject jsonss =JSONObject.parseObject(paras.getString(i));
 				String format=jsonss.getString("in");
+				if(format.equals("header"))continue;
 				if(format!=null&&format.equals("body")) {
 					JSONObject schema=JSONObject.parseObject(jsonss.getString("schema"));
 					String type=schema.getString("type");
@@ -255,7 +259,6 @@ public class Swagger2 {
             swaggerInfo =JSONObject.parseObject(result);
         } catch (Exception e) {
         	log.error("swagger url连接地址异常！");
-//            e.printStackTrace();
             
         }
 		return swaggerInfo;

@@ -70,7 +70,7 @@ public class ApiSwaggerController {
 	
 	@ApiOperation(value = "同步单个url")
 	@RequestMapping(value = "/pullSingleSwagger", method = RequestMethod.POST)
-	public Result<Object> pullSingleSwagger(Integer pid,@RequestBody SwaggerInfo swg) {
+	public Result<Object> pullSingleSwagger(@RequestParam(name = "pid") Integer pid,@RequestBody SwaggerInfo swg) {
 		//@RequestHeader("Authorization") String token
 		Result<Object> res=new Result<>();
 		Boolean isSucc=apiSwaggerService.pullSwaggerByHander(pid, swg);
